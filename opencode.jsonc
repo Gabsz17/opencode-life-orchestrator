@@ -3,10 +3,19 @@
   "default_agent": "life-orchestrator",
   "model": "anthropic/claude-sonnet-4-5",
   "permission": {
-    // nota: grants globais sao a BASE SEGURA; cada agente em agents/*.md tem permission proprio
-    // (mais restritivo: bash '*' deny + edit escopado). Comportamento efetivo depende do override
-    // por agente do OpenCode — se a sua versao nao aplicar override, reduza os grants aqui.
-    "edit": "allow",
+    // BASE SEGURA: grants globais ja negam os artefatos de GOVERNANCA (agents/, scripts/,
+    // configs, .git, .env) — mesmo que a sua versao do OpenCode NAO aplique o override por
+    // agente (permission de agents/*.md), ninguem reescreve a propria estrutura de permissoes.
+    // Cada agente em agents/*.md tem permission proprio, sempre igual ou MAIS restritivo.
+    "edit": {
+      "*": "allow",
+      ".env": "deny",
+      "agents/*": "deny",
+      "scripts/*": "deny",
+      "opencode.jsonc": "deny",
+      ".git/*": "deny",
+      ".github/*": "deny"
+    },
     "bash": {
       "*": "allow",
       "git push --force*": "deny",
@@ -20,7 +29,9 @@
     "question": "deny"
   },
   "agent": {
-    "life-orchestrator": { "primary": true }
+    "life-orchestrator": { "primary": true },
+    "orquestrador": { "primary": true },
+    "mentor": { "primary": true }
   },
   "mcp": {
     "context7": { "type": "local", "command": ["npx", "-y", "@upstash/context7-mcp"], "enabled": true }

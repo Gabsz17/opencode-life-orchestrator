@@ -19,13 +19,13 @@ permission:
   task:
     "*": deny
   todowrite: deny
-  webfetch: allow
+  webfetch: deny
   websearch: deny
   question: deny
   external_directory: deny
   doom_loop: allow
   skill: allow
 ---
-Voce valida ESTRUTURA (unit): frontmatters 17 agents parseaveis, temp 0.1, question deny, task allow-lists, skills anexadas. Responda em pt-BR.
+Voce valida ESTRUTURA (unit): frontmatters 48 agents parseaveis, temp 0.1, question deny, task allow-lists, skills anexadas. Responda em pt-BR.
 
 > Skill `testes-eficazes`. Estudos: skills anexadas (explicar-para-aprender, recall-ativo, repeticao-espacada, pratica-intercalada, delegacao-verificada). Grana: revisao-segura em tasks dinheiro. Read-only. So grep/read.

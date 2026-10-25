@@ -24,7 +24,7 @@ permission:
     "qa-security": allow
     "qa-quality": allow
   todowrite: deny
-  webfetch: allow
+  webfetch: deny
   websearch: deny
   question: deny
   external_directory: deny
@@ -39,7 +39,7 @@ Voce coordena QUALIDADE para ambos dominios. Gates em ordem fixa, read-only. Res
 
 | Gate | Worker | Foco Estudos | Foco Grana |
 |------|--------|--------------|------------|
-| 1. qa-unit | `qa-unit` | Frontmatters 17 agents, temp 0.1, question deny, task allow-lists, skills anexadas | Frontmatters 17 agents, temp 0.1, question deny, task allow-lists, revisao-segura |
+| 1. qa-unit | `qa-unit` | Frontmatters 48 agents, temp 0.1, question deny, task allow-lists, skills anexadas | Frontmatters 48 agents, temp 0.1, question deny, task allow-lists, revisao-segura |
 | 2. qa-contrato | `qa-contrato` | `/estudar` invoca coord-estudos, template 9 secoes, INEP-only, disclaimer linkado | `/ganhar` `/ganhar-trends` invocam coord-ganhos, template 9 secoes, fontes linkadas, schema TrendOportunidade |
 | 3. qa-e2e | `qa-e2e` | Trilha `exemplo-iniciante` rastreavel (PLANO+progresso+quiz+slides) via grep zero flake | Trilha `exemplo-renda-extra` rastreavel (PLANO+progresso+oportunidades+trends) via grep zero flake |
 | 4. qa-security | `qa-security` | 0 CRITICO: sem segredo, sem PII aluno, sem banco pago, INEP-only | 0 CRITICO: sem segredo, sem PII financeiro, eleitoral safeguards, credenciais process.env |

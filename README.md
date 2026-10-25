@@ -3,20 +3,45 @@
 > **Estudos**: conteudo educacional. Sem banco pago, sem questao falsa INEP. Ver [`docs/estudos/disclaimer.md`](docs/estudos/disclaimer.md).
 > **Ganhos**: nao e recomendacao de investimento. Ha risco de perda. Sem promessa de lucro. Ver [`docs/ganhos/disclaimer.md`](docs/ganhos/disclaimer.md).
 
-Um so agente primary (`life-orchestrator`) gerencia dois dominios — **Estudos (ENEM)** e **Grana (mercado/negocios/trends)** — roteando automaticamente para o coord certo conforme a necessidade.
+Um so agente primary (`life-orchestrator`) gerencia tres dominios — **Estudos (ENEM)**, **Grana (mercado/negocios/trends)** e **Software (projeto de codigo)** — roteando automaticamente para o coord certo conforme a necessidade.
 
-## Arquitetura
+Ha tambem dois primarios alternativos para missao focada: `orquestrador` (so software) e `mentor` (so estudos).
+
+## Arquitetura (48 agentes: 3 primaries, 10 coords, 35 workers)
 
 ```
-life-orchestrator (primary)
+life-orchestrator (primary unificador — roteia pelos 3 dominios)
 ├── coord-estudos   → 8 workers (teoria, ENEM, pratica, avaliacao)
 ├── coord-ganhos    → 8 workers (mercado, negocios, trends, risco)
+├── coord-frontend  → fe-pages, fe-components, fe-state, fe-a11y         (software)
+├── coord-backend   → be-api, be-auth, be-domain, be-data, be-integrations (software)
 ├── coord-pesquisa  → web-researcher, web-operator   (compartilhado)
 ├── coord-qualidade → qa-unit, qa-contrato, qa-e2e, qa-security, qa-quality (compartilhado)
 └── coord-plataforma→ plat-infra, plat-docs, plat-observability (compartilhado)
+
+Primarios alternativos (mesma equipe, foco estreito):
+- orquestrador → coord-frontend, coord-backend + coords compartilhados  (missao so de codigo)
+- mentor       → coord-teoria, coord-pratica, coord-avaliacao + coord-pesquisa (missao so de estudos)
 ```
 
-Coords especializados isolam cada dominio; coords compartilhados (pesquisa, qualidade, plataforma) servem aos dois.
+Coords especializados isolam cada dominio; coords compartilhados (pesquisa, qualidade, plataforma) servem aos tres. Os coords granulares de estudos (`coord-teoria`, `coord-pratica`, `coord-avaliacao`) pertencem ao `mentor`; o `life-orchestrator` usa `coord-estudos` (agregado) — as duas estruturas convivem sem conflito. **Regra**: 1 sessao = 1 estrutura de estudos (`life-orchestrator` -> `coord-estudos`; `mentor` -> coords granulares), nunca os dois caminhos concorrendo na mesma sessao.
+
+## Fusao com o orquestrador (2026-10-25)
+
+Os 32 agentes originais foram mantidos e os 16 que so existiam no orquestrador global
+(`~/.config/opencode/agents`) foram copiados para ca: `orquestrador`, `mentor`,
+`coord-frontend`, `coord-backend`, `coord-teoria`, `coord-pratica`, `coord-avaliacao`,
+`fe-pages`, `fe-components`, `fe-state`, `fe-a11y`, `be-api`, `be-auth`, `be-domain`,
+`be-data`, `be-integrations` — total **48**.
+
+Arbitragens do contrato do orquestrador (arquivo `API.md` multi-projeto, fora deste repo) — resumo abaixo:
+- `fe`/`be` mantem `temperature` 0.1-0.3 e `edit` amplo (calibracao original), porem com
+  `agents/*`, `scripts/*`, `opencode.jsonc`, `.git/*`, `.github/*`, `API.md` e `git push` **negados**
+  (anti-escala de privilegio, exigido pelo `validate.mjs`).
+- `orquestrador` e `mentor` entram como **primarios alternativos**; `default_agent` continua
+  `life-orchestrator`.
+- Grants globais do `opencode.jsonc` ja negam os artefatos de governanca (base segura mesmo sem
+  override por agente).
 
 ## Comandos
 
@@ -39,7 +64,7 @@ Coords especializados isolam cada dominio; coords compartilhados (pesquisa, qual
 ## Rodar
 
 ```bash
-npm run validate           # validacao estrutural (14 checks)
+npm run validate           # validacao estrutural (16 checks)
 npm run fetch-trends       # coleta trends 7 fontes (cache 24h)
 npm run gen-report-estudos <tema> [YYYY-MM]
 npm run gen-report-ganhos  <objetivo> [YYYY-MM]

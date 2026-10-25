@@ -52,35 +52,51 @@ console.log("\n== Life Orchestrator :: validate ==\n");
 console.log("[1] agents/");
 const agentFiles = walk("agents", (r) => r.endsWith(".md"));
 const AGENTS = [
-  "life-orchestrator",
+  "life-orchestrator", "orquestrador", "mentor",
   "coord-estudos", "coord-ganhos", "coord-pesquisa", "coord-qualidade", "coord-plataforma",
+  "coord-teoria", "coord-pratica", "coord-avaliacao", "coord-frontend", "coord-backend",
   "teoria-conceito", "teoria-exemplos", "enem-questoes", "enem-slides",
   "pratica-exercicios", "pratica-projetos", "aval-quiz", "aval-feedback",
   "mercado-acoes", "mercado-cripto", "mercado-renda-fixa",
   "negocio-freela", "negocio-digital", "negocio-local",
   "trends-research", "risco-gestao",
+  "fe-pages", "fe-components", "fe-state", "fe-a11y",
+  "be-api", "be-auth", "be-domain", "be-data", "be-integrations",
   "web-researcher", "web-operator",
   "qa-unit", "qa-contrato", "qa-e2e", "qa-security", "qa-quality",
   "plat-infra", "plat-docs", "plat-observability",
 ];
+const PRIMARY = ["life-orchestrator", "orquestrador", "mentor"];
+const SW_WORKERS = /^(fe|be)-/; // workers de software: temp 0.2-0.3 + edit amplo (calibracao do orquestrador)
 for (const a of AGENTS) {
   const raw = read(`agents/${a}.md`);
   if (!raw) { erro(`agents/${a}.md ausente`); continue; }
   const fm = frontmatter(raw);
   if (!fm) { erro(`agents/${a}.md sem frontmatter`); continue; }
   if (fm.mode !== "primary" && fm.mode !== "subagent") erro(`${a}: mode invalido (${fm.mode})`);
-  if (fm.temperature && fm.temperature !== "0.1") erro(`${a}: temperature != 0.1`);
+  if (fm.temperature) {
+    const t = parseFloat(fm.temperature);
+    const max = SW_WORKERS.test(a) ? 0.3 : 0.1;
+    if (!(t >= 0.1 && t <= max)) erro(`${a}: temperature ${fm.temperature} fora de [0.1, ${max}]`);
+  }
   const permBlock = raw.slice(raw.indexOf("permission:"));
   if (!/question:\s*deny/.test(permBlock)) erro(`${a}: question != deny`);
 }
-ok(`${agentFiles.length} arquivos de agente; ${AGENTS.length} esperados mapeados`);
+// igualdade de conjuntos: nenhum .md orfao em agents/ e nenhum esperado ausente
+const fileNames = agentFiles.map((f) => f.replace(/^agents[\\/]/, "").replace(/\.md$/, "")).sort();
+const listed = [...AGENTS].sort();
+if (JSON.stringify(fileNames) !== JSON.stringify(listed)) {
+  const orfaos = fileNames.filter((n) => !AGENTS.includes(n));
+  const ausentes = listed.filter((n) => !fileNames.includes(n));
+  erro(`agents/ divergente do AGENTS[] (orfao: ${orfaos.join(",") || "-"} | ausente: ${ausentes.join(",") || "-"})`);
+} else ok(`${agentFiles.length} arquivos = ${AGENTS.length} esperados (conjuntos identicos)`);
 
 // ---------- CHECK 2: primary ----------
 console.log("\n[2] primary life-orchestrator");
 const primary = read("agents/life-orchestrator.md") || "";
 if (/mode:\s*primary/.test(primary)) ok("mode: primary");
 else erro("life-orchestrator sem mode: primary");
-for (const c of ["coord-estudos", "coord-ganhos", "coord-pesquisa", "coord-qualidade", "coord-plataforma"]) {
+for (const c of ["coord-estudos", "coord-ganhos", "coord-frontend", "coord-backend", "coord-pesquisa", "coord-qualidade", "coord-plataforma"]) {
   if (primary.includes(`"${c}": allow`)) ok(`task allow: ${c}`);
   else erro(`life-orchestrator sem task allow: ${c}`);
 }
@@ -88,31 +104,91 @@ if (/"\*":\s*deny/.test(primary) && /"coord-estudos":\s*allow/.test(primary)) ok
 else erro("life-orchestrator sem task allow-list adequada");
 if (/"git push --force\*":\s*deny/.test(primary)) ok("bash deny force-push");
 else erro("life-orchestrator sem deny force-push");
+// roteamento de PRECISAO: os 35 workers devem ter allow explicito (apagar 1 = rota morta com validate verde)
+const SW_ALL = /^(fe|be)-/;
+const TODOS_WORKERS = AGENTS.filter((a) => !a.startsWith("coord-") && !PRIMARY.includes(a));
+let rotasMortas = 0;
+for (const w of TODOS_WORKERS) {
+  if (!primary.includes(`"${w}": allow`)) { erro(`life-orchestrator sem task allow (rota de precisao morta): ${w}`); rotasMortas++; }
+}
+if (!rotasMortas) ok(`life-orchestrator -> ${TODOS_WORKERS.length} worker-allows de precisao completos`);
+// primarios alternativos: nao podem ter worker direto (orchestram so via coords) nem allow entre si
+for (const p of ["orquestrador", "mentor"]) {
+  const raw = read(`agents/${p}.md`) || "";
+  const comWorker = TODOS_WORKERS.filter((w) => raw.includes(`"${w}": allow`));
+  const comPrimary = PRIMARY.filter((x) => x !== p && raw.includes(`"${x}": allow`));
+  if (comWorker.length) erro(`${p} tem allow direto de worker (desenhado so-via-coords): ${comWorker.join(",")}`);
+  else ok(`${p} orquestra so via coords (sem worker direto)`);
+  if (comPrimary.length) erro(`${p} delega a outro primary: ${comPrimary.join(",")}`);
+}
+// primarios secundarios existem e delegam ao time certo
+const orc = read("agents/orquestrador.md") || "";
+if (/mode:\s*primary/.test(orc) && orc.includes('"coord-frontend": allow') && orc.includes('"coord-backend": allow')) ok("orquestrador (primary software) -> coords fe/be");
+else erro("orquestrador sem primary ou sem allow coord-frontend/coord-backend");
+const men = read("agents/mentor.md") || "";
+if (/mode:\s*primary/.test(men) && men.includes('"coord-teoria": allow') && men.includes('"coord-avaliacao": allow')) ok("mentor (primary estudos) -> coords granulares");
+else erro("mentor sem primary ou sem allow coord-teoria/coord-avaliacao");
 
 // ---------- CHECK 3: coords so delegam seu time ----------
 console.log("\n[3] allow-lists dos coords");
 const times = {
   "coord-estudos": ["teoria-conceito", "teoria-exemplos", "enem-questoes", "enem-slides", "pratica-exercicios", "pratica-projetos", "aval-quiz", "aval-feedback"],
   "coord-ganhos": ["mercado-acoes", "mercado-cripto", "mercado-renda-fixa", "negocio-freela", "negocio-digital", "negocio-local", "trends-research", "risco-gestao"],
+  "coord-teoria": ["teoria-conceito", "teoria-exemplos", "enem-slides"],
+  "coord-pratica": ["pratica-exercicios", "pratica-projetos", "enem-questoes"],
+  "coord-avaliacao": ["aval-quiz", "aval-feedback"],
+  "coord-frontend": ["fe-pages", "fe-components", "fe-state", "fe-a11y"],
+  "coord-backend": ["be-api", "be-auth", "be-domain", "be-data", "be-integrations"],
   "coord-pesquisa": ["web-researcher", "web-operator"],
   "coord-qualidade": ["qa-unit", "qa-contrato", "qa-e2e", "qa-security", "qa-quality"],
   "coord-plataforma": ["plat-infra", "plat-docs", "plat-observability"],
 };
 for (const [coord, team] of Object.entries(times)) {
   const raw = read(`agents/${coord}.md`) || "";
-  let all = true;
-  for (const t of team) if (!raw.includes(`"${t}": allow`)) { erro(`${coord} sem allow: ${t}`); all = false; }
-  if (all) ok(`${coord} -> ${team.length} workers autorizados`);
+  // igualdade de conjuntos (nao presence-only): extrai TODOS os task allow e compara
+  const allowed = [...raw.matchAll(/"([a-z0-9-]+)":\s*allow/g)]
+    .map((m) => m[1])
+    .filter((n) => AGENTS.includes(n) && n !== coord)
+    .sort();
+  const esperado = [...team].sort();
+  if (JSON.stringify(allowed) !== JSON.stringify(esperado)) {
+    const extra = allowed.filter((n) => !team.includes(n));
+    const faltando = team.filter((n) => !allowed.includes(n));
+    erro(`${coord} allow divergente (extra: ${extra.join(",") || "-"} | faltando: ${faltando.join(",") || "-"})`);
+  } else ok(`${coord} -> ${team.length} workers autorizados (exatos)`);
 }
 
 // ---------- CHECK 4: workers edit-scoped ----------
 console.log("\n[4] workers (edit-scoped)");
-const workers = AGENTS.filter((a) => !a.startsWith("coord-") && a !== "life-orchestrator");
+const workers = AGENTS.filter((a) => !a.startsWith("coord-") && !PRIMARY.includes(a));
+const editBloco = (raw) => (raw.match(/permission:[\s\S]{0,600}?edit:\s*\r?\n((?:[ \t]+"[^"]+":\s*\w+\r?\n)+)/) || [])[1] || "";
+const errsAntesDoCheck4 = erros;
 for (const w of workers) {
   const raw = read(`agents/${w}.md`) || "";
-  if (/"\*":\s*deny/.test(raw) === false) erro(`${w}: sem deny no wildcard de edit`);
+  const eb = editBloco(raw);
+  const editInlineDeny = /^\s*edit:\s*deny\s*$/m.test(raw);
+  if (SW_WORKERS.test(w)) {
+    if (!eb) { erro(`${w}: nao consegui isolar o bloco edit`); continue; }
+    // workers de software escrevem no codigo do projeto, mas NUNCA no contrato unico nem fazem push
+    // (aceita `"*": deny` no bloco edit — read-only total — ou escopo aberto com deny explicito em API.md)
+    const readOnlyTotal = /"\*":\s*deny/.test(eb);
+    if (!readOnlyTotal && !/"API\.md":\s*deny/.test(eb)) erro(`${w}: sem protecao de API.md no bloco edit`);
+    // anti-escala de privilegio (so para quem tem edit amplo): nao pode reescrever agents/ nem a config
+    if (!readOnlyTotal) {
+      if (!/"agents\/\*":\s*deny/.test(eb)) erro(`${w}: sem deny em agents/* (escala de privilegio)`);
+      if (!/"scripts\/\*":\s*deny/.test(eb)) erro(`${w}: sem deny em scripts/* (escala de privilegio)`);
+      if (!/"opencode\.jsonc":\s*deny/.test(eb)) erro(`${w}: sem deny em opencode.jsonc`);
+      if (!/"\.git\/\*":\s*deny/.test(eb)) erro(`${w}: sem deny em .git/* (hooks)`);
+      if (!/"\.github\/\*":\s*deny/.test(eb)) erro(`${w}: sem deny em .github/* (workflows)`);
+    }
+    if (!/"git push\*":\s*deny/.test(raw)) erro(`${w}: sem deny em git push`);
+  } else if (editInlineDeny) {
+    // edit negado em linha unica = escopo fechado total
+  } else if (!eb || !/"\*":\s*deny/.test(eb)) {
+    erro(`${w}: sem deny no wildcard do bloco edit`);
+  }
 }
-ok(`${workers.length} workers com escopo de edicao restrito (checado)`);
+if (erros === errsAntesDoCheck4) ok(`${workers.length} workers com escopo de edicao restrito (checado no bloco edit)`);
 
 // ---------- CHECK 5: commands ----------
 console.log("\n[5] commands/");
@@ -204,6 +280,18 @@ console.log("\n[11] configs");
 const cfg = read("opencode.jsonc") || "";
 if (cfg.includes('"default_agent": "life-orchestrator"')) ok("default_agent: life-orchestrator");
 else erro("opencode.jsonc sem default_agent life-orchestrator");
+// parse real do JSONC (remove // comentarios de linha) — sem isso, quebra silencioso no runtime
+try {
+  const parsed = JSON.parse(cfg.replace(/^\s*\/\/.*$/gm, ""));
+  ok(`opencode.jsonc parseia (JSON valido, ${Object.keys(parsed).length} chaves raiz)`);
+  const ge = parsed?.permission?.edit;
+  if (ge && typeof ge === "object") {
+    for (const d of ["agents/*", "scripts/*", "opencode.jsonc", ".git/*", ".github/*", ".env"]) {
+      if (ge[d] === "deny") ok(`grant global edit deny: ${d}`);
+      else erro(`grant global edit sem deny: ${d} (base segura dos gates 4-5)`);
+    }
+  } else erro("permission.edit do opencode.jsonc nao e mapa com denies de governanca");
+} catch (e) { erro(`opencode.jsonc invalido: ${e.message}`); }
 if (cfg.includes('"*": "allow"') === false && !/bash[\s\S]*"regex"/.test(cfg)) aviso("opencode.jsonc: revisar grant bash (Opcao A)");
 if (read(".env.example")) ok(".env.example presente"); else erro(".env.example ausente");
 const gitignore = read(".gitignore") || "";
@@ -255,12 +343,12 @@ const MOJI = /Ã[\x80-\xbf]|â€|Â[\x80-\xbf]/;
 let mojiHits = 0;
 for (const f of walk("docs", (r) => r.endsWith(".md"))
   .concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")),
-          walk("evals", (r) => r.endsWith(".md")))) {
+          walk("evals", (r) => r.endsWith(".md")), walk("agents", (r) => r.endsWith(".md")))) {
   const raw = read(f) || "";
   const m = raw.match(MOJI);
   if (m) { erro(`${f}: mojibake/encoding (${m[0]}...)`); mojiHits++; }
 }
-if (!mojiHits) ok("sem mojibake (UTF-8 integro em docs/templates/commands/evals)");
+if (!mojiHits) ok("sem mojibake (UTF-8 integro em docs/templates/commands/evals/agents)");
 
 // ---------- CHECK 16: links relativos resolvem p/ arquivo existente ----------
 console.log("\n[16] links relativos");
