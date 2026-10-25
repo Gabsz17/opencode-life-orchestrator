@@ -3,7 +3,9 @@
   "default_agent": "life-orchestrator",
   "model": "anthropic/claude-sonnet-4-5",
   "permission": {
-    "//nota": "Grants globais sao a BASE SEGURA; cada agente em agents/*.md tem permission proprio (mais restritivo: bash '*' deny + edit escopado). O comportamento efetivo depende do override por agente do OpenCode — se a sua versao nao aplicar override, reduza aqui.",
+    // nota: grants globais sao a BASE SEGURA; cada agente em agents/*.md tem permission proprio
+    // (mais restritivo: bash '*' deny + edit escopado). Comportamento efetivo depende do override
+    // por agente do OpenCode — se a sua versao nao aplicar override, reduza os grants aqui.
     "edit": "allow",
     "bash": {
       "*": "allow",
