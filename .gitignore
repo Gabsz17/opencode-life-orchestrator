@@ -1,0 +1,24 @@
+# dependencias / build
+node_modules/
+package-lock.json
+
+# ambiente (NUNCA commitar)
+.env
+.env.local
+*.pem
+*.key
+
+# cache trends (TTL 24h, regeneravel)
+docs/ganhos/trends-cache/*.json
+!docs/ganhos/trends-cache/.gitkeep
+
+# backups (regeneraveis)
+backups/
+*.tar.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

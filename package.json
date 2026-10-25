@@ -1,0 +1,19 @@
+{
+  "name": "opencode-life-orchestrator",
+  "version": "1.0.0",
+  "description": "Life Orchestrator — modo unificado Estudos (ENEM) + Grana (mercado/negocios/trends) para OpenCode",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "fetch-trends": "node scripts/fetch-trends.mjs",
+    "gen-report-estudos": "node scripts/gen-report-estudos.mjs",
+    "gen-report-ganhos": "node scripts/gen-report-ganhos.mjs",
+    "backup": "node scripts/backup.mjs",
+    "restore": "node scripts/restore.mjs",
+    "sync-memory": "node scripts/sync-memory.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

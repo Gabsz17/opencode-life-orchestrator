@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "life-orchestrator",
+  "model": "anthropic/claude-sonnet-4-5",
+  "permission": {
+    "edit": "allow",
+    "bash": {
+      "*": "allow",
+      "git push --force*": "deny",
+      "git push * --force*": "deny",
+      "git push * -f*": "deny",
+      "git push * --delete*": "deny",
+      "rm -rf*": "deny"
+    },
+    "webfetch": "allow",
+    "websearch": "allow",
+    "question": "deny"
+  },
+  "agent": {
+    "life-orchestrator": { "primary": true }
+  },
+  "mcp": {
+    "context7": { "type": "local", "command": ["npx", "-y", "@upstash/context7-mcp"], "enabled": true }
+  },
+  "instructions": ["docs/estudos/disclaimer.md", "docs/ganhos/disclaimer.md", "docs/shared/memoria-guia.md"]
+}
