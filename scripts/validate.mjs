@@ -233,8 +233,8 @@ for (const f of mdFiles) {
 }
 if (!a11yErr) ok(`${mdFiles.length} md com H1 unico`);
 
-// ---------- CHECK 14: segredos (docs/templates/commands/evals/scripts — NAO agents) ----------
-console.log("\n[14] segredos (fora de agents/)");
+// ---------- CHECK 14: segredos (docs/templates/commands/evals/scripts — NAO agents/ nem skills/) ----------
+console.log("\n[14] segredos (fora de agents/ e skills/)");
 const SECRET = /(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|password\s*=\s*["'][^"']+["'])/;
 let secretHits = 0;
 const secretScope = walk("docs", (r) => r.endsWith(".md"))
@@ -245,9 +245,37 @@ for (const f of secretScope) {
   const m = raw.match(SECRET);
   if (m && !raw.includes("{env:")) { erro(`${f}: possivel segredo (${m[0].slice(0, 12)}...)`); secretHits++; }
 }
-if (!secretHits) ok(`sem segredos em ${secretScope.length} arquivos (agents/ pulado p/ falso-positivo)`);
+if (!secretHits) ok(`sem segredos em ${secretScope.length} arquivos (agents/ e skills/ pulados p/ falso-positivo)`);
 if (existsSync(join(ROOT, ".env"))) erro(".env presente no repo (deve estar fora do git)");
 else ok(".env fora do repo");
+
+// ---------- CHECK 15: encoding (mojibake UTF-8 mal decodificado) ----------
+console.log("\n[15] encoding (mojibake)");
+const MOJI = /Ã[\x80-\xbf]|â€|Â[\x80-\xbf]/;
+let mojiHits = 0;
+for (const f of walk("docs", (r) => r.endsWith(".md"))
+  .concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")),
+          walk("evals", (r) => r.endsWith(".md")))) {
+  const raw = read(f) || "";
+  const m = raw.match(MOJI);
+  if (m) { erro(`${f}: mojibake/encoding (${m[0]}...)`); mojiHits++; }
+}
+if (!mojiHits) ok("sem mojibake (UTF-8 integro em docs/templates/commands/evals)");
+
+// ---------- CHECK 16: links relativos resolvem p/ arquivo existente ----------
+console.log("\n[16] links relativos");
+const LINK = /\]\((\.{1,2}\/[^)#\s]+)\)/;
+let linkHits = 0;
+let linkTotal = 0;
+for (const f of walk("docs", (r) => r.endsWith(".md")).concat(walk("commands", (r) => r.endsWith(".md")))) {
+  const raw = read(f) || "";
+  for (const [, rel] of raw.matchAll(new RegExp(LINK.source, "g"))) {
+    linkTotal++;
+    const alvo = join(dirname(join(ROOT, f)), rel);
+    if (!existsSync(alvo)) { erro(`${f}: link quebrado -> ${rel}`); linkHits++; }
+  }
+}
+if (!linkHits) ok(`${linkTotal} links relativos resolvem para arquivos existentes`);
 
 // ---------- resumo ----------
 console.log(`\n== RESULTADO: ${erros} ERRO(S), ${avisos} AVISO(S) ==`);

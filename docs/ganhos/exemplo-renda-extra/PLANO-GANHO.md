@@ -1,5 +1,7 @@
 # PLANO-GANHO — exemplo-renda-extra (renda extra 2k)
 
+> Conteudo educacional. Ver [disclaimer](../disclaimer.md).
+
 > Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Ver [disclaimer](../disclaimer.md). Sem promessa de lucro.
 
 ## 1. Objetivo SMART

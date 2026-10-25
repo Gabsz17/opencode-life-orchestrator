@@ -1,8 +1,7 @@
-# Simulados â€” exemplo ENEM (esqueleto)
+# Simulados — exemplo ENEM (esqueleto)
 
 > Conteudo educacional. Ver [disclaimer](../../disclaimer.md).
 
-
-| Data | QuestÃµes | Tempo | Acertos |
+| Data | Questões | Tempo | Acertos |
 |------|----------|-------|---------|
 | <!-- TODO --> | | | |

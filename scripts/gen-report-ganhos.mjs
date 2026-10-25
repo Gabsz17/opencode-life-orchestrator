@@ -4,7 +4,7 @@
 // EDUCACIONAL: sem recomendacao, sem promessa de lucro; fonte+data obrigatorios.
 
 import { readFileSync, existsSync, writeFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, relative as pathRelative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -17,6 +17,9 @@ if (!objetivo) { console.error("Uso: node scripts/gen-report-ganhos.mjs <objetiv
 const dir = join(ROOT, "docs", "ganhos", objetivo);
 if (!existsSync(dir)) { console.error(`Objetivo nao encontrado: ${dir}`); process.exit(1); }
 
+// disclaimer com path relativo calculado pela profundidade do objetivo
+const disclaimerRel = pathRelative(dir, join(ROOT, "docs", "ganhos", "disclaimer.md")).split("\\").join("/");
+
 const ler = (f) => (existsSync(join(dir, f)) ? readFileSync(join(dir, f), "utf8") : "");
 const plano = ler("PLANO-GANHO.md");
 const progresso = ler("progresso.md");
@@ -28,7 +31,7 @@ const linhasProgresso = (progresso.match(/^\|/gm) || []).length;
 
 const relatorio = `# Relatorio de ganhos — ${objetivo} (${periodo})
 
-> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Sem promessa de lucro. Ver [disclaimer](../disclaimer.md).
+> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Sem promessa de lucro. Ver [disclaimer](${disclaimerRel}).
 
 ## Resumo
 - Registros de progresso: ${linhasProgresso}

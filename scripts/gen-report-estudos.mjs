@@ -4,7 +4,7 @@
 // Le docs/estudos/<tema>/ e emite relatorio-YYYY-MM.md
 
 import { readFileSync, existsSync, writeFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, relative as pathRelative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -16,6 +16,9 @@ if (!tema) { console.error("Uso: node scripts/gen-report-estudos.mjs <tema> [YYY
 
 const dir = join(ROOT, "docs", "estudos", tema);
 if (!existsSync(dir)) { console.error(`Tema nao encontrado: ${dir}`); process.exit(1); }
+
+// disclaimer com path relativo calculado pela profundidade do tema (aceita subpastas: enem/<area>/<tema>)
+const disclaimerRel = pathRelative(dir, join(ROOT, "docs", "estudos", "disclaimer.md")).split("\\").join("/");
 
 const ler = (f) => (existsSync(join(dir, f)) ? readFileSync(join(dir, f), "utf8") : "");
 const plano = ler("PLANO-ESTUDOS.md");
@@ -32,7 +35,7 @@ const modulosPendentes = (plano.match(/\|\s*pendente/gi) || []).length;
 
 const relatorio = `# Relatorio de estudos — ${tema} (${periodo})
 
-> Conteudo educacional. Ver [disclaimer](../disclaimer.md).
+> Conteudo educacional. Ver [disclaimer](${disclaimerRel}).
 
 ## Resumo
 - Quizzes: ${quizzes.length} | Gabaritos: ${gabaritos.length}

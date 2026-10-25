@@ -1,11 +1,10 @@
-# QuestÃµes â€” exemplo ENEM (esqueleto, sem questÃµes)
+# Questões — exemplo ENEM (esqueleto, sem questões)
 
 > Conteudo educacional. Ver [disclaimer](../../disclaimer.md).
 
+> NENHUMA questão neste esqueleto. Questões autorais entram marcadas `autoral — padrão ENEM`; oficiais só do INEP com `ano + caderno/cor + nº + link`. Respostas do aluno vão em `respostas-<modulo>.md` (nunca editar quiz/gabarito).
 
-> NENHUMA questÃ£o neste esqueleto. QuestÃµes autorais entram marcadas `autoral â€” padrÃ£o ENEM`; oficiais sÃ³ do INEP com `ano + caderno/cor + nÂº + link`. Respostas do aluno vÃ£o em `respostas-<modulo>.md` (nunca editar quiz/gabarito).
-
-<!-- TODO: questÃµes autorais (marcar autoral) ou oficiais INEP citadas. Nenhum enunciado de exemplo para zerar risco de questÃ£o falsa. -->
+<!-- TODO: questões autorais (marcar autoral) ou oficiais INEP citadas. Nenhum enunciado de exemplo para zerar risco de questão falsa. -->
 
 ## Gabarito (separado)
 

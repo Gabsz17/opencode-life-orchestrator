@@ -4,15 +4,14 @@
 
 ## Resumo
 - Registros de progresso: 3
-- Itens `nao confirmado` (sem fonte): 2
-- Arquivos da trilha: 3
-- Trends registrados: nao
+- Itens `nao confirmado` (sem fonte): 4
+- Arquivos da trilha: 5
+- Trends registrados: sim
 
 ## Progresso (extrato)
-### progresso â€” exemplo-renda-extra
+### progresso - exemplo-renda-extra
 
 > Conteudo educacional. Ver [disclaimer](../disclaimer.md).
-
 
 | Data | Dominio | O que fez | Metrica | Proxima acao |
 |------|---------|-----------|---------|--------------|
@@ -26,4 +25,4 @@
 ## Aviso
 Comparacao educacional entre alternativas. A decisao e do usuario, junto com custos, impostos e riscos.
 
-_Gerado por scripts/gen-report-ganhos.mjs em 2026-10-25T23:04:03.810Z_
+_Gerado por scripts/gen-report-ganhos.mjs em 2026-10-25T23:11:56.659Z_

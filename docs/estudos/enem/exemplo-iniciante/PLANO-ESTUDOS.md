@@ -12,7 +12,13 @@
 
 ## 3. Pre-requisitos
 - Simples nocao de formula quimica.
-- Glossario: `glossario.md`.
+- Glossario: `glossario.md` (**pendente** — sera criado por `teoria-conceito`).
+
+## Pendencias do esqueleto (arquivos ainda NAO criados — status `pendente`)
+- `glossario.md` (dono: `teoria-conceito`)
+- `respostas-m1.md` (dono: aluno)
+- `quiz-m1.md` + `gabarito-m1.md` (dono: `aval-quiz`)
+- `questoes.md`, `simulados.md`, `slides.md` existem como **esqueleto** (marcados `<!-- TODO -->`).
 
 ## 4. Modulos
 | Modulo | Conceitos | Exemplos | Carga | Criterio parada | Status |

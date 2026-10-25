@@ -1,7 +1,6 @@
-# progresso â€” exemplo-renda-extra
+# progresso - exemplo-renda-extra
 
 > Conteudo educacional. Ver [disclaimer](../disclaimer.md).
-
 
 | Data | Dominio | O que fez | Metrica | Proxima acao |
 |------|---------|-----------|---------|--------------|

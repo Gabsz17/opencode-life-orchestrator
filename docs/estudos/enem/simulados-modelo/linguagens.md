@@ -1,95 +1,94 @@
-# Simulado-modelo â€” Linguagens e suas Tecnologias (autoral, padrÃ£o ENEM)
+# Simulado-modelo — Linguagens e suas Tecnologias (autoral, padrão ENEM)
 
 > Conteudo educacional. Ver [disclaimer](../../disclaimer.md).
 
+> TODAS as questões abaixo são `autoral — padrão ENEM` (nenhuma é de prova oficial; códigos Hn exatos: `não confirmado` — ver PDF v1 da matriz). 5 alternativas por questão; gabarito separado no fim com resolução + habilidade. Tempo sugerido: 30 min. Intercalado por construção (gramática, interpretação, literatura, LE).
 
-> TODAS as questÃµes abaixo sÃ£o `autoral â€” padrÃ£o ENEM` (nenhuma Ã© de prova oficial; cÃ³digos Hn exatos: `nÃ£o confirmado` â€” ver PDF v1 da matriz). 5 alternativas por questÃ£o; gabarito separado no fim com resoluÃ§Ã£o + habilidade. Tempo sugerido: 30 min. Intercalado por construÃ§Ã£o (gramÃ¡tica, interpretaÃ§Ã£o, literatura, LE).
+## Questões
 
-## QuestÃµes
-
-**Q1.** Texto-base (autoral): "A praÃ§a esvaziou cedo. SÃ³ o vendedor de algodÃ£o-doce ficou, girando o palito como quem enrola o prÃ³prio tempo."
-No trecho, a comparaÃ§Ã£o final sugere:
+**Q1.** Texto-base (autoral): "A praça esvaziou cedo. Só o vendedor de algodão-doce ficou, girando o palito como quem enrola o próprio tempo."
+No trecho, a comparação final sugere:
 A) pressa do vendedor em ir embora
 B) monotonia dilatada da espera
 C) habilidade manual do vendedor
-D) doÃ§ura do algodÃ£o-doce
-E) barulho da praÃ§a vazia
+D) doçura do algodão-doce
+E) barulho da praça vazia
 
-**Q2.** (GramÃ¡tica â€” concordÃ¢ncia) Assinale a frase em que a concordÃ¢ncia verbal estÃ¡ correta na norma-padrÃ£o:
+**Q2.** (Gramática — concordância) Assinale a frase em que a concordância verbal está correta na norma-padrão:
 A) Haviam muitos alunos na fila da cantina.
-B) Existe pessoas que nunca faltam Ã  aula.
+B) Existe pessoas que nunca faltam à aula.
 C) Fazem dois anos que ela estuda para o ENEM.
 D) Houve protestos e houve aplausos na assembleia.
 E) Devem haver cadeiras para todos os presentes.
 
-**Q3.** Texto-base (autoral, tirinha descrita): Quadrinho 1: aluno diz "Vou estudar vÃ©spera, sempre funcionou". Quadrinho 2 (dia da prova): o mesmo aluno, em branco, pensa "nÃ£o funcionou".
+**Q3.** Texto-base (autoral, tirinha descrita): Quadrinho 1: aluno diz "Vou estudar véspera, sempre funcionou". Quadrinho 2 (dia da prova): o mesmo aluno, em branco, pensa "não funcionou".
 O efeito de humor nasce:
-A) da contradiÃ§Ã£o entre a confianÃ§a e o resultado
+A) da contradição entre a confiança e o resultado
 B) do desenho malfeito dos personagens
-C) da repetiÃ§Ã£o da palavra "funcionou"
-D) da crÃ­tica ao professor da tirinha
-E) do uso de gÃ­rias na fala do aluno
+C) da repetição da palavra "funcionou"
+D) da crítica ao professor da tirinha
+E) do uso de gírias na fala do aluno
 
-**Q4.** (Literatura) "Minha terra tem palmeiras, / Onde canta o SabiÃ¡" (GonÃ§alves Dias, "CanÃ§Ã£o do exÃ­lio"). O eu lÃ­rico expressa:
-A) crÃ­tica Ã  natureza tropical
-B) saudosismo da pÃ¡tria distante
+**Q4.** (Literatura) "Minha terra tem palmeiras, / Onde canta o Sabiá" (Gonçalves Dias, "Canção do exílio"). O eu lírico expressa:
+A) crítica à natureza tropical
+B) saudosismo da pátria distante
 C) desejo de viajar pela Europa
-D) indiferenÃ§a pelo lugar de origem
-E) medo do exÃ­lio forÃ§ado
+D) indiferença pelo lugar de origem
+E) medo do exílio forçado
 
-**Q5.** (InterpretaÃ§Ã£o â€” charge descrita) Charge: um funil gigante rotulado "notÃ­cias" despeja manchetes contraditÃ³rias sobre uma pessoa pequena com um celular. A crÃ­tica central Ã©:
-A) ao preÃ§o dos celulares
-B) ao excesso e Ã  contradiÃ§Ã£o informativa
-C) Ã  falta de jornais impressos
+**Q5.** (Interpretação — charge descrita) Charge: um funil gigante rotulado "notícias" despeja manchetes contraditórias sobre uma pessoa pequena com um celular. A crítica central é:
+A) ao preço dos celulares
+B) ao excesso e à contradição informativa
+C) à falta de jornais impressos
 D) ao tamanho dos funis industriais
-E) Ã  preguiÃ§a de quem lÃª no celular
+E) à preguiça de quem lê no celular
 
-**Q6.** (RegÃªncia) Assinale a alternativa em que a regÃªncia estÃ¡ correta:
-A) Ele assistiu o filme ontem Ã  noite. (sentido de ver)
-B) O professor visou os alunos com a advertÃªncia. (sentido de mirar)
-C) Prefiro cafÃ© do que chÃ¡ pela manhÃ£.
-D) Chegamos cedo no colÃ©gio para a prova.
+**Q6.** (Regência) Assinale a alternativa em que a regência está correta:
+A) Ele assistiu o filme ontem à noite. (sentido de ver)
+B) O professor visou os alunos com a advertência. (sentido de mirar)
+C) Prefiro café do que chá pela manhã.
+D) Chegamos cedo no colégio para a prova.
 E) Ela esqueceu-se da chave em casa.
 
-**Q7.** Texto-base (autoral): "O relatÃ³rio, embora extenso, foi entregue no prazo porque a equipe dividiu as seÃ§Ãµes e revisou em pares."
-A estratÃ©gia de coesÃ£o que sustenta o perÃ­odo Ã© a:
-A) repetiÃ§Ã£o do sujeito em todas as oraÃ§Ãµes
-B) concessÃ£o ("embora") + causa ("porque") articuladas
-C) enumeraÃ§Ã£o de datas e nÃºmeros
-D) comparaÃ§Ã£o entre equipes
-E) inversÃ£o da ordem direta das frases
+**Q7.** Texto-base (autoral): "O relatório, embora extenso, foi entregue no prazo porque a equipe dividiu as seções e revisou em pares."
+A estratégia de coesão que sustenta o período é a:
+A) repetição do sujeito em todas as orações
+B) concessão ("embora") + causa ("porque") articuladas
+C) enumeração de datas e números
+D) comparação entre equipes
+E) inversão da ordem direta das frases
 
-**Q8.** (InglÃªs) "She has studied for the test since March, yet she still feels unprepared." O conectivo "yet" estabelece relaÃ§Ã£o de:
+**Q8.** (Inglês) "She has studied for the test since March, yet she still feels unprepared." O conectivo "yet" estabelece relação de:
 A) causa
-B) conclusÃ£o
+B) conclusão
 C) contraste
-D) condiÃ§Ã£o
+D) condição
 E) tempo
 
-**Q9.** (VariaÃ§Ã£o linguÃ­stica) "Me dÃ¡ um help aÃ­ rapidÃ£o?" A frase mistura registro informal brasileiro e emprÃ©stimo do inglÃªs. Em contexto formal (e-mail a um professor), a adequaÃ§Ã£o exige:
-A) manter tudo, pois a lÃ­ngua Ã© livre
-B) trocar sÃ³ "rapidÃ£o" por "rapidamente"
-C) reescrever: "VocÃª poderia me ajudar, por favor?"
+**Q9.** (Variação linguística) "Me dá um help aí rapidão?" A frase mistura registro informal brasileiro e empréstimo do inglês. Em contexto formal (e-mail a um professor), a adequação exige:
+A) manter tudo, pois a língua é livre
+B) trocar só "rapidão" por "rapidamente"
+C) reescrever: "Você poderia me ajudar, por favor?"
 D) traduzir "help" e manter o resto
-E) usar sÃ³ emojis para suavizar
+E) usar só emojis para suavizar
 
-**Q10.** Texto-base (autoral): "Duas escolas vizinhas adotaram o mesmo livro. Numa, a leitura era tarefa silenciosa de sexta; na outra, debate barulhento de segunda. No fim do ano, sÃ³ uma turma citava trechos de cor."
-A conclusÃ£o implÃ­cita do texto Ã© que:
+**Q10.** Texto-base (autoral): "Duas escolas vizinhas adotaram o mesmo livro. Numa, a leitura era tarefa silenciosa de sexta; na outra, debate barulhento de segunda. No fim do ano, só uma turma citava trechos de cor."
+A conclusão implícita do texto é que:
 A) livros iguais geram resultados iguais
 B) o modo de ler (debate ativo) fixou mais que a leitura silenciosa
-C) segundas-feiras sÃ£o melhores que sextas
+C) segundas-feiras são melhores que sextas
 D) turmas barulhentas aprendem menos
-E) citar de cor Ã© o Ãºnico objetivo da leitura
+E) citar de cor é o único objetivo da leitura
 
 ## Gabarito (separado)
 
-1. **B** â€” "enrola o prÃ³prio tempo" = tempo que nÃ£o passa; monotonia da espera. Hab.: LP â€” inferÃªncia (Hn: n/c).
-2. **D** â€” "haver" impessoal sÃ³ na 3Âª pessoa singular; "Houve protestos e houve aplausos" correto. Hab.: LP â€” norma-padrÃ£o (Hn: n/c).
-3. **A** â€” humor na quebra de expectativa entre confianÃ§a e branco. Hab.: LP â€” linguagem nÃ£o verbal (Hn: n/c).
-4. **B** â€” exÃ­lio + natureza = saudade da pÃ¡tria (Romantismo). Hab.: LIT â€” eu lÃ­rico (Hn: n/c).
-5. **B** â€” funil + manchetes contraditÃ³rias = infoxicaÃ§Ã£o. Hab.: LP â€” leitura crÃ­tica (Hn: n/c).
-6. **E** â€” "esquecer-se de" (pronominal exige preposiÃ§Ã£o); A exigiria "ao filme", B "aos alunos", C "a ... do que", D "ao colÃ©gio". Hab.: LP â€” regÃªncia (Hn: n/c).
-7. **B** â€” "embora" (concessÃ£o) + "porque" (causa) articulam o perÃ­odo. Hab.: LP â€” coesÃ£o (Hn: n/c).
-8. **C** â€” "yet" = contraste ("e ainda assim"). Hab.: LE â€” conectivos (Hn: n/c).
-9. **C** â€” registro formal exige reescrita completa e cortesia. Hab.: LP â€” adequaÃ§Ã£o (Hn: n/c).
-10. **B** â€” debate ativo > leitura passiva; resto distorce o texto. Hab.: LP â€” tese implÃ­cita (Hn: n/c).
+1. **B** — "enrola o próprio tempo" = tempo que não passa; monotonia da espera. Hab.: LP — inferência (Hn: n/c).
+2. **D** — "haver" impessoal só na 3ª pessoa singular; "Houve protestos e houve aplausos" correto. Hab.: LP — norma-padrão (Hn: n/c).
+3. **A** — humor na quebra de expectativa entre confiança e branco. Hab.: LP — linguagem não verbal (Hn: n/c).
+4. **B** — exílio + natureza = saudade da pátria (Romantismo). Hab.: LIT — eu lírico (Hn: n/c).
+5. **B** — funil + manchetes contraditórias = infoxicação. Hab.: LP — leitura crítica (Hn: n/c).
+6. **E** — "esquecer-se de" (pronominal exige preposição); A exigiria "ao filme", B "aos alunos", C "a ... do que", D "ao colégio". Hab.: LP — regência (Hn: n/c).
+7. **B** — "embora" (concessão) + "porque" (causa) articulam o período. Hab.: LP — coesão (Hn: n/c).
+8. **C** — "yet" = contraste ("e ainda assim"). Hab.: LE — conectivos (Hn: n/c).
+9. **C** — registro formal exige reescrita completa e cortesia. Hab.: LP — adequação (Hn: n/c).
+10. **B** — debate ativo > leitura passiva; resto distorce o texto. Hab.: LP — tese implícita (Hn: n/c).

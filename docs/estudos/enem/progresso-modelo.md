@@ -1,28 +1,27 @@
-# Progresso â€” modelo de painel (copie para `progresso.md` da trilha)
+# Progresso — modelo de painel (copie para `progresso.md` da trilha)
 
 > Conteudo educacional. Ver [disclaimer](../disclaimer.md).
 
+> O mentor preenche a cada sessão. Sem dado real neste modelo. Sem PII.
 
-> O mentor preenche a cada sessÃ£o. Sem dado real neste modelo. Sem PII.
+## Sessões (streak manual)
 
-## SessÃµes (streak manual)
-
-| Data | MÃ³dulo | Visto | Quiz score | PrÃ³xima revisÃ£o |
+| Data | Módulo | Visto | Quiz score | Próxima revisão |
 |------|--------|-------|------------|-----------------|
 | | | | | |
 
-- Ãšltima sessÃ£o: <!-- AAAA-MM-DD -->
-- SessÃµes seguidas (streak): <!-- n -->
+- Última sessão: <!-- AAAA-MM-DD -->
+- Sessões seguidas (streak): <!-- n -->
 
-## Scores por Ã¡rea (ENEM)
+## Scores por área (ENEM)
 
-| Ãrea | QuestÃµes feitas | Acertos | % | Ãšltimo simulado |
+| Área | Questões feitas | Acertos | % | Último simulado |
 |------|-----------------|---------|---|-----------------|
 | linguagens | | | | |
 | humanas | | | | |
 | natureza | | | | |
 | matematica | | | | |
-| redacao (C1â€“C5, sem nota) | | | | |
+| redacao (C1–C5, sem nota) | | | | |
 
 ## Top 3 gaps (habilidades com mais erro)
 
@@ -30,14 +29,14 @@
 2. <!-- TODO -->
 3. <!-- TODO -->
 
-## PrÃ³ximas 3 revisÃµes
+## Próximas 3 revisões
 
-1. <!-- data + mÃ³dulo -->
-2. <!-- data + mÃ³dulo -->
-3. <!-- data + mÃ³dulo -->
+1. <!-- data + módulo -->
+2. <!-- data + módulo -->
+3. <!-- data + módulo -->
 
-## Fila FSRS-like (manual: acertouâ†’dobra o intervalo; errouâ†’volta a 1 dia)
+## Fila FSRS-like (manual: acertou→dobra o intervalo; errou→volta a 1 dia)
 
-| Item | Ãšltimo acerto | Intervalo atual | PrÃ³xima data |
+| Item | Último acerto | Intervalo atual | Próxima data |
 |------|---------------|-----------------|--------------|
 | <!-- TODO --> | | 1 dia | |
