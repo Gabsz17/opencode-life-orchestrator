@@ -1,6 +1,6 @@
 # TrendOportunidade — Schema Zod (Ganha Fase Trends)
 
-> Estende `Oportunidade` Fase base. Validacao manual em `scripts/validate.mjs`. Workers com Node_modules importam Zod real.
+> Estende `Oportunidade` Fase base. Invariantes checados pelo `scripts/validate.mjs` (check 21: score>0 exige volume+persistencia; eleitoral exige base_legal; data ISO). Validacao Zod completa sob demanda (workers com Node_modules importam Zod real).
 
 ```typescript
 import { z } from "zod";

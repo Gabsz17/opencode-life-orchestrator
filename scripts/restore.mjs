@@ -14,7 +14,15 @@ if (!dominio || !["estudos", "ganhos"].includes(dominio) || !nome || !arquivo) {
   console.error("Uso: node scripts/restore.mjs <estudos|ganhos> <nome> <arquivo.tar.gz>");
   process.exit(1);
 }
+if (!/^[\w-]+$/.test(nome)) { console.error(`Nome invalido: "${nome}" (use letras/numeros/-/_)`); process.exit(1); }
+if (!/\.(tar\.gz|tgz)$/.test(arquivo)) { console.error(`Arquivo invalido: "${arquivo}" (esperado .tar.gz ou .tgz)`); process.exit(1); }
 if (!existsSync(arquivo)) { console.error(`Backup nao encontrado: ${arquivo}`); process.exit(1); }
+let _membros = [];
+try { _membros = execFileSync("tar", ["-tzf", arquivo], { encoding: "utf8" }).split(/\r?\n/).filter(Boolean); }
+catch (e) { console.error(`Backup ilegivel (tar): ${e.message}`); process.exit(1); }
+// anti path traversal: TODO membro precisa ficar sob <nome>/ (sem "..", sem absoluto)
+const _fora = _membros.find((m) => m.includes("..") || m.startsWith("/") || !(m === nome || m === `${nome}/` || m.startsWith(`${nome}/`)));
+if (_fora) { console.error(`Membro fora de "${nome}": "${_fora}" — restore abortado`); process.exit(1); }
 
 const dest = join(ROOT, "docs", dominio);
 mkdirSync(dest, { recursive: true });

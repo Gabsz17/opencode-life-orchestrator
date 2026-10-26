@@ -42,11 +42,19 @@ if (idx !== -1) {
   const antes = mem.slice(0, idx + "## Recentes".length);
   let resto = mem.slice(idx + "## Recentes".length);
   const linhasResto = resto.split(/\r?\n/);
-  const existentes = linhasResto.filter((l) => l.startsWith("- "));
+  // coleta APENAS o bloco de itens logo apos o header (indice-based: nao colhe listas de secoes seguintes)
+  let ini = 0;
+  while (ini < linhasResto.length && linhasResto[ini].trim() === "") ini++;
+  const idxItens = [];
+  if (ini < linhasResto.length && linhasResto[ini].startsWith("- ")) {
+    for (let i = ini; i < linhasResto.length && linhasResto[i].startsWith("- "); i++) idxItens.push(i);
+  }
+  const existentes = idxItens.map((i) => linhasResto[i]);
   const combinadas = [...dedup, ...existentes].slice(0, TETO_RECENTES);
   // reescrita das recentes
   const novasLinhasResto = ["", ...combinadas.map((c) => c)];
-  const restoLimpo = linhasResto.filter((l) => !l.startsWith("- ") && l.trim() !== "");
+  // remove SO as posicoes dos itens migrados: headers, paragrafos e linhas em branco ficam intactos
+  const restoLimpo = linhasResto.filter((_, i) => !idxItens.includes(i));
   out = antes + novasLinhasResto.join("\n") + "\n" + restoLimpo.join("\n");
 } else {
   out = mem + "\n## Recentes\n" + dedup.map((d) => d).join("\n") + "\n";

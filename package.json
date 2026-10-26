@@ -11,7 +11,8 @@
     "gen-report-ganhos": "node scripts/gen-report-ganhos.mjs",
     "backup": "node scripts/backup.mjs",
     "restore": "node scripts/restore.mjs",
-    "sync-memory": "node scripts/sync-memory.mjs"
+    "sync-memory": "node scripts/sync-memory.mjs",
+    "digest": "node scripts/gen-digest.mjs"
   },
   "engines": {
     "node": ">=18"

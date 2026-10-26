@@ -19,3 +19,12 @@
 - trends24.in: hrefs sao `twitter.com/search?q=...` (nao `/brazil/`); regex corrigida.
 - PowerShell `Set-Content -Encoding utf8` insere BOM e corrompe `^# ` no a11y-check - remover BOM via Node (buf.slice(3)). Edicao de .md sempre via Node `fs` + utf8 (LF/CRLF: usar `\r?\n` em regex).
 - Frontmatter com indentacao 2/4 e `\r?\n` variam entre repos - regex de bloco edit precisa cobrir ambos.
+- `git add` em caminho gitignorado = no-op silencioso (`|| true` + `diff --cached --quiet` = "Nada novo." para sempre). Workflow de commit automatico precisa de `git add -f` ou negacao no .gitignore - sempre conferir os dois lados do par (B1, 2026-10-26).
+- Check que acusa o fluxo documentado e bug do check: `existsSync(.env) -> ERRO` conflita com `.env.example` mandando criar `.env`. Validar ESTADO NO GIT (`git ls-files --error-unmatch` + `git check-ignore`), nao existencia de arquivo.
+- Supressao de falso-positivo tem que ser por MATCH, nao por arquivo: `!raw.includes("{env:")` vira escudo para qualquer segredo real do mesmo arquivo (B6).
+- Regex de link relativo precisa cobrir alvo sem `./` (`](disclaimer.md)` e a forma mais comum do repo); escopo do check de links deve incluir README/templates/evals (B5).
+- `process.argv` sem guarda de path: `join(ROOT, "docs", tema)` com `tema=../../..` passa no existsSync e grava FORA da trilha - sempre regex `^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*$` antes de montar path/saida (B10/B11).
+- Argumento ignorado em wrapper de fetch: helper `getJSON(url, ms)` chamado com 3a posicao de headers descarta o User-Agent - assinatura do wrapper espelha a do helper base (afeta Wikimedia, que exige UA).
+- Contagem escrita em label e divida: "7 fontes" ficou errado quando a fallback Wikipedia entrou como 8a - derivar contagem do dado gerado (`out.fontes.length`), nao de texto fixo espalhado (B8).
+- Disclaimer "no topo" em md com frontmatter (slides Marp): o check deve PULAR o frontmatter - o disclaimer abre o CORPO do doc (check 7).
+- Paths de runtime (`.opencode/memory/inbox/<agente>.md`, criados sob demanda) nao podem ser exigidos pelo validador de paths - validar so o diretorio (check 18).

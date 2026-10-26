@@ -15,6 +15,7 @@ if (!dominio || !["estudos", "ganhos"].includes(dominio) || !nome) {
   console.error("Uso: node scripts/backup.mjs <estudos|ganhos> <nome>");
   process.exit(1);
 }
+if (!/^[\w-]+$/.test(nome)) { console.error(`Nome invalido: "${nome}" (use letras/numeros/-/_)`); process.exit(1); }
 
 const src = join(ROOT, "docs", dominio, nome);
 if (!existsSync(src)) { console.error(`Trilha nao encontrada: ${src}`); process.exit(1); }

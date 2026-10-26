@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// fetch-trends.mjs — coleta trends das 7 fontes com cache diario (TTL 24h)
+// fetch-trends.mjs — coleta trends das 7 fontes oficiais (+ fallback Wikipedia pageviews = 8 no array "fontes") com cache diario (TTL 24h)
 // Uso: node scripts/fetch-trends.mjs [--force]
 // Saida: docs/ganhos/trends-cache/YYYY-MM-DD.json
 // Regra: sem fonte = "nao confirmado"; credenciais so via env ({env:NOME} no opencode).
@@ -10,7 +10,8 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CACHE_DIR = join(ROOT, "docs", "ganhos", "trends-cache");
-const hoje = new Date().toISOString().slice(0, 10);
+const _d = new Date();
+const hoje = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}-${String(_d.getDate()).padStart(2, "0")}`;
 const arquivo = join(CACHE_DIR, `${hoje}.json`);
 const force = process.argv.includes("--force");
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 life-orchestrator/1.0";
@@ -44,8 +45,8 @@ async function getText(url, timeoutMs = 10000, headers = {}) {
     return await res.text();
   } finally { clearTimeout(t); }
 }
-async function getJSON(url, timeoutMs = 10000) {
-  return JSON.parse(await getText(url, timeoutMs));
+async function getJSON(url, timeoutMs = 10000, headers = {}) {
+  return JSON.parse(await getText(url, timeoutMs, headers));
 }
 const decodeEntities = (s) => s
   .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
@@ -206,11 +207,12 @@ writeFileSync(arquivo, JSON.stringify(out, null, 2), "utf8");
 
 // limpeza: caches > 7 dias (apenas arquivos do proprio cache)
 try {
-  const corte = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const cd = new Date(Date.now() - 7 * 86400000);
+  const corte = `${cd.getFullYear()}-${String(cd.getMonth() + 1).padStart(2, "0")}-${String(cd.getDate()).padStart(2, "0")}`;
   for (const f of readdirSync(CACHE_DIR)) {
     const data = f.replace(/\.json$/, "");
     if (/^\d{4}-\d{2}-\d{2}$/.test(data) && data < corte) rmSync(join(CACHE_DIR, f), { force: true });
   }
 } catch { /* best effort */ }
 
-console.log(`[fetch-trends] OK -> ${arquivo} (${trends.length} itens, ${comFonte} com fonte)`);
+console.log(`[fetch-trends] OK -> ${arquivo} (${trends.length} itens, ${comFonte} com fonte, ${out.fontes.length} fontes consultadas)`);

@@ -1,11 +1,13 @@
 # ENEM — como estudar
 
+> Conteudo educacional. Sem banco pago, sem questao falsa INEP. Ver [Aviso educacional — disclaimer](../disclaimer.md).
+
 > Trilhas do ENEM por área (`linguagens|humanas|natureza|matematica|redacao`) em `docs/estudos/enem/<area>/<tema>/` (plano + teoria + `questoes.md` + `simulados.md` + `slides.md` + quiz + `progresso.md`).
 
 ## Início rápido
 
 1. Rode `/estudar-enem <area> <tema>` (ex: `/estudar-enem natureza fotossintese`).
-2. O mentor cria o plano (seção ENEM) e delega: teoria (conceitos + exemplos + slides Marp), prática (exercícios + questões ENEM), avaliação (quiz + feedback).
+2. O orquestrador roteia (`life-orchestrator` -> `coord-estudos`) e cria o plano (seção ENEM), delegando: teoria (conceitos + exemplos + slides Marp), prática (exercícios + questões ENEM), avaliação (quiz + feedback).
 3. Acompanhe o `progresso.md` (scores por área, simulados feitos, redação por competência).
 
 ## Como pedir cada coisa
@@ -18,6 +20,6 @@
 
 ## Regras
 
-- Sem fonte oficial ou briefing `docs/pesquisa/enem-fontes.md` = `não confirmado`.
+- Sem fonte oficial ou briefing `docs/estudos/enem-fontes.md` = `não confirmado`.
 - Nenhum segredo no repo.
-- Exemplo de estrutura (sem conteúdo): `docs/estudos/enem/exemplo/`.
+- Exemplo de estrutura (sem conteúdo): `docs/estudos/enem/exemplo-iniciante/`.

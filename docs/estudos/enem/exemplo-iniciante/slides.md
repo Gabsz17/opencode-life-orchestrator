@@ -1,12 +1,9 @@
-> Conteudo educacional. Ver [disclaimer](../../disclaimer.md).
-
-﻿> Conteudo educacional. Ver [disclaimer param($m) $m.Value.Replace('\','/') .
-
-
 ---
 marp: true
 theme: default
 ---
+
+> Conteudo educacional. Sem banco pago, sem questao falsa INEP. Ver [Aviso educacional — disclaimer](../../disclaimer.md).
 
 # <tema> (esqueleto)
 

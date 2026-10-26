@@ -1,6 +1,6 @@
 # /ganhar — inicia plano de ganhos com coord-ganhos
 
-> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Ver `docs/ganhos/disclaimer.md`. Sem promessa de lucro.
+> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Ver [Aviso educacional — disclaimer](../docs/ganhos/disclaimer.md). Sem promessa de lucro.
 
 Invoca `life-orchestrator` -> `coord-ganhos` (mercado + negocios + risco + trends). Cria `docs/ganhos/<objetivo>/PLANO-GANHO.md` a partir de `templates/PLANO-GANHO.md` (9 secoes incl. Trends).
 

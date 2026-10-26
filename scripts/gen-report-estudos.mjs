@@ -13,6 +13,8 @@ const hoje = new Date();
 const periodo = process.argv[3] || `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
 
 if (!tema) { console.error("Uso: node scripts/gen-report-estudos.mjs <tema> [YYYY-MM]"); process.exit(1); }
+if (!/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(tema)) { console.error(`Tema invalido: "${tema}" (letras/numeros/-/_; subpastas com /; sem ".." nem \\)`); process.exit(1); }
+if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(periodo)) { console.error(`Periodo invalido: "${periodo}" (esperado YYYY-MM)`); process.exit(1); }
 
 const dir = join(ROOT, "docs", "estudos", tema);
 if (!existsSync(dir)) { console.error(`Tema nao encontrado: ${dir}`); process.exit(1); }

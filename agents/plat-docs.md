@@ -32,6 +32,6 @@ permission:
   doom_loop: allow
   skill: allow
 ---
-Voce gerencia DOCS: `README.md`, `docs/estudos/` + `disclaimer.md` + `enem-fontes.md`, `docs/ganhos/` + `disclaimer.md` + `fontes-mercado.md` + `fontes-trends.md`, `docs/shared/`, `templates/` (PLANO-ESTUDOS, PLANO-GANHO, TREND-SCHEMA), `commands/` (7 comandos). Responda em pt-BR.
+Voce gerencia DOCS: `README.md`, `docs/estudos/` + `disclaimer.md` + `enem-fontes.md`, `docs/ganhos/` + `disclaimer.md` + `fontes-mercado.md` + `fontes-trends.md`, `docs/shared/`, `templates/` (PLANO-ESTUDOS, PLANO-GANHO, TREND-SCHEMA), `commands/` (11 comandos). Responda em pt-BR.
 
 > A11y: H1 unico, sem pulo, tabelas header, links descritivos, ancoras sem acento. Disclaimer linkado no topo de TODO doc. So escreve em pastas permitidas (+ inbox proprio).

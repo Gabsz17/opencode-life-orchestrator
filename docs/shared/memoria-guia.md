@@ -1,5 +1,7 @@
 # Memoria compartilhada — guia (Estudos + Grana)
 
+> Estudos: ver [disclaimer](../estudos/disclaimer.md). Grana: ver [disclaimer](../ganhos/disclaimer.md). Nao e recomendacao de investimento; sem questao falsa INEP.
+
 > `.opencode/memory/MEMORIA.md` unica; inboxes por agente em `.opencode/memory/inbox/`.
 
 ## Ciclo

@@ -4,7 +4,8 @@
 // Saida: OK/AVISO/ERRO por check. Exit code 1 se houver ERRO.
 
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
-import { join, dirname, relative } from "node:path";
+import { execFileSync } from "node:child_process";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -105,7 +106,6 @@ else erro("life-orchestrator sem task allow-list adequada");
 if (/"git push --force\*":\s*deny/.test(primary)) ok("bash deny force-push");
 else erro("life-orchestrator sem deny force-push");
 // roteamento de PRECISAO: os 35 workers devem ter allow explicito (apagar 1 = rota morta com validate verde)
-const SW_ALL = /^(fe|be)-/;
 const TODOS_WORKERS = AGENTS.filter((a) => !a.startsWith("coord-") && !PRIMARY.includes(a));
 let rotasMortas = 0;
 for (const w of TODOS_WORKERS) {
@@ -192,17 +192,36 @@ if (erros === errsAntesDoCheck4) ok(`${workers.length} workers com escopo de edi
 
 // ---------- CHECK 5: commands ----------
 console.log("\n[5] commands/");
-const CMDS = ["estudar", "estudar-enem", "estudar-relatorio", "ganhar", "ganhar-diario", "ganhar-trends", "ganhar-relatorio", "ganhar-backup"];
+const CMDS = ["estudar", "estudar-enem", "estudar-revisao", "estudar-relatorio", "dia", "revisar",
+  "ganhar", "ganhar-diario", "ganhar-trends", "ganhar-relatorio", "ganhar-backup"];
+const ROTA = {
+  "estudar": ["life-orchestrator", "coord-estudos"],
+  "estudar-enem": ["life-orchestrator", "coord-estudos"],
+  "estudar-revisao": ["life-orchestrator", "coord-estudos"],
+  "estudar-relatorio": ["life-orchestrator", "coord-estudos"],
+  "dia": ["life-orchestrator", "coord-plataforma"],
+  "revisar": ["life-orchestrator", "coord-estudos", "coord-ganhos"],
+  "ganhar": ["life-orchestrator", "coord-ganhos"],
+  "ganhar-diario": ["life-orchestrator", "coord-ganhos"],
+  "ganhar-trends": ["life-orchestrator", "coord-ganhos"],
+  "ganhar-relatorio": ["life-orchestrator", "coord-ganhos"],
+  "ganhar-backup": ["life-orchestrator", "coord-ganhos"],
+};
+let cmdsOk = 0;
 for (const c of CMDS) {
   const raw = read(`commands/${c}.md`);
   if (!raw) { erro(`commands/${c}.md ausente`); continue; }
-  const expects = c.startsWith("estudar") ? "coord-estudos" : "coord-ganhos";
-  if (raw.includes(expects) || raw.includes("life-orchestrator")) ok(`${c} -> ${expects}`);
-  else erro(`${c} nao referencia ${expects}`);
-  if (c.startsWith("ganhar") && !raw.includes("docs/ganhos/disclaimer.md")) erro(`${c}: sem disclaimer ganhos`);
-  if (c.startsWith("estudar") && !raw.includes("docs/estudos/disclaimer.md")) erro(`${c}: sem disclaimer estudos`);
+  const linhaInv = raw.split(/\r?\n/).find((l) => l.startsWith("Invoca")) || "";
+  const faltando = ROTA[c].filter((r) => !linhaInv.includes(r));
+  if (faltando.length) erro(`${c}: nao referencia ${faltando.join(" + ")}`);
+  const naoVazias = raw.split(/\r?\n/).filter((l) => l.trim() !== "");
+  const idx = naoVazias.findIndex((l) => /\]\([^)]*disclaimer\.md\)/.test(l));
+  if (idx === -1 || idx > 2) erro(`${c}: disclaimer nao e LINK nas 3 primeiras linhas (idx=${idx})`);
+  if (c.startsWith("estudar") && !/estudos\/disclaimer\.md/.test(raw)) erro(`${c}: sem disclaimer estudos`);
+  if (c.startsWith("ganhar") && !/ganhos\/disclaimer\.md/.test(raw)) erro(`${c}: sem disclaimer ganhos`);
+  if (!faltando.length && idx !== -1 && idx <= 2) cmdsOk++;
 }
-ok(`${CMDS.length} comandos checados`);
+if (cmdsOk === CMDS.length) ok(`${CMDS.length} comandos: rota correta + disclaimer LINK no topo`);
 
 // ---------- CHECK 6: templates ----------
 console.log("\n[6] templates/");
@@ -227,16 +246,26 @@ for (const d of ["docs/estudos/README.md", "docs/estudos/disclaimer.md", "docs/e
   "docs/shared/memoria-guia.md"]) {
   if (read(d)) ok(d); else erro(`${d} ausente`);
 }
-// disclaimer linkado no topo dos docs de conteudo
+// disclaimer LINKADO no topo dos docs de conteudo (README incluido; disclaimer.md auto-excluido)
 for (const dir of ["docs/estudos", "docs/ganhos"]) {
-  const files = walk(dir, (r) => r.endsWith(".md") && !r.includes("disclaimer") && !r.endsWith("README.md"));
+  const files = walk(dir, (r) => r.endsWith(".md") && !r.endsWith("disclaimer.md"));
   let falta = 0;
   for (const f of files) {
     const raw = read(f) || "";
-    if (!/disclaimer\.md/.test(raw)) { falta++; erro(`${f}: sem link de disclaimer`); }
+    // pula frontmatter YAML (ex.: slides Marp) — o disclaimer deve abrir o CORPO
+    const fm = raw.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
+    const corpo = fm ? raw.slice(fm[0].length) : raw;
+    const naoVazias = corpo.split(/\r?\n/).filter((l) => l.trim() !== "");
+    const idx = naoVazias.findIndex((l) => /\]\([^)]*disclaimer\.md\)/.test(l));
+    if (idx === -1) { falta++; erro(`${f}: sem link de disclaimer`); }
+    else if (idx > 2) { falta++; erro(`${f}: disclaimer fora do topo (3a linha nao-vazia = ${idx})`); }
   }
-  if (!falta) ok(`${dir}: todos os docs linkam disclaimer`);
+  if (!falta) ok(`${dir}: disclaimer LINK no topo nos ${files.length} docs`);
 }
+// docs compartilhados (misturam estudos+grana) tambem linkam
+const sharedRaw = read("docs/shared/memoria-guia.md") || "";
+if (/estudos\/disclaimer\.md/.test(sharedRaw) && /ganhos\/disclaimer\.md/.test(sharedRaw)) ok("docs/shared: linka os 2 disclaimers");
+else erro("docs/shared/memoria-guia.md: sem os 2 disclaimers linkados");
 
 // ---------- CHECK 8: trilhas piloto ----------
 console.log("\n[8] trilhas piloto (e2e)");
@@ -251,25 +280,29 @@ for (const [plano, prog] of e2e) {
 
 // ---------- CHECK 9: evals ----------
 console.log("\n[9] evals/");
-const evalStats = [["evals/estudos.md", 15], ["evals/ganhos.md", 19]];
-for (const [f, min] of evalStats) {
+const evalStats = [["evals/estudos.md", 21, /^## E\d+/gm], ["evals/ganhos.md", 23, /^## E\d+/gm], ["evals/software.md", 4, /^## S\d+/gm]];
+for (const [f, min, pat] of evalStats) {
   const raw = read(f);
   if (!raw) { erro(`${f} ausente`); continue; }
-  const n = (raw.match(/^## E\d+/gm) || []).length;
+  const n = (raw.match(pat) || []).length;
   if (n >= min) ok(`${f}: ${n} evals (min ${min})`);
   else erro(`${f}: ${n} evals (< ${min})`);
 }
 
 // ---------- CHECK 10: scripts + package.json ----------
 console.log("\n[10] scripts + package.json");
-for (const s of ["validate.mjs", "fetch-trends.mjs", "gen-report-estudos.mjs", "gen-report-ganhos.mjs", "backup.mjs", "restore.mjs", "sync-memory.mjs"]) {
-  if (existsSync(join(ROOT, "scripts", s))) ok(`scripts/${s}`);
-  else erro(`scripts/${s} ausente`);
+let sintaxeErr = 0;
+for (const s of ["validate.mjs", "fetch-trends.mjs", "gen-report-estudos.mjs", "gen-report-ganhos.mjs", "gen-digest.mjs", "backup.mjs", "restore.mjs", "sync-memory.mjs"]) {
+  const p = join(ROOT, "scripts", s);
+  if (!existsSync(p)) { erro(`scripts/${s} ausente`); sintaxeErr++; continue; }
+  try { execFileSync(process.execPath, ["--check", p], { stdio: "pipe" }); }
+  catch (e) { erro(`scripts/${s}: erro de sintaxe -> ${String(e.stderr || "").split("\n")[0]}`); sintaxeErr++; }
 }
+if (!sintaxeErr) ok("8 scripts passam em node --check");
 const pkgRaw = read("package.json");
 if (pkgRaw) {
   const pkg = JSON.parse(pkgRaw);
-  for (const s of ["validate", "fetch-trends", "gen-report-estudos", "gen-report-ganhos", "backup", "restore", "sync-memory"]) {
+  for (const s of ["validate", "fetch-trends", "gen-report-estudos", "gen-report-ganhos", "digest", "backup", "restore", "sync-memory"]) {
     if (pkg.scripts && pkg.scripts[s]) ok(`npm run ${s}`);
     else erro(`package.json sem script: ${s}`);
   }
@@ -299,6 +332,8 @@ for (const g of [".env", "node_modules", "trends-cache", "backups"]) {
   if (gitignore.includes(g)) ok(`.gitignore: ${g}`);
   else erro(`.gitignore sem ${g}`);
 }
+if (gitignore.includes("!.env.example")) ok(".gitignore: !.env.example (negacao do par .env.*)");
+else erro(".gitignore sem !.env.example (.env.example seria ignorado)");
 if (read("README.md")) ok("README.md"); else erro("README.md ausente");
 if (read("LICENSE")) ok("LICENSE"); else erro("LICENSE ausente");
 
@@ -311,7 +346,7 @@ for (const w of ["trends.yml", "validate.yml"]) {
 
 // ---------- CHECK 13: a11y markdown ----------
 console.log("\n[13] a11y markdown");
-const mdFiles = walk("docs", (r) => r.endsWith(".md")).concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")));
+const mdFiles = walk("docs", (r) => r.endsWith(".md")).concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")));
 let a11yErr = 0;
 for (const f of mdFiles) {
   const raw = read(f) || "";
@@ -331,11 +366,25 @@ const secretScope = walk("docs", (r) => r.endsWith(".md"))
 for (const f of secretScope) {
   const raw = read(f) || "";
   const m = raw.match(SECRET);
-  if (m && !raw.includes("{env:")) { erro(`${f}: possivel segredo (${m[0].slice(0, 12)}...)`); secretHits++; }
+  if (m && !m[0].includes("{env:")) { erro(`${f}: possivel segredo (${m[0].slice(0, 12)}...)`); secretHits++; }
 }
 if (!secretHits) ok(`sem segredos em ${secretScope.length} arquivos (agents/ e skills/ pulados p/ falso-positivo)`);
-if (existsSync(join(ROOT, ".env"))) erro(".env presente no repo (deve estar fora do git)");
-else ok(".env fora do repo");
+// .env LOCAL e legitimo (.env.example manda criar); o erro e estar VERSIONADO ou fora do .gitignore
+let gitDisp = false;
+try { execFileSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd: ROOT, stdio: "ignore" }); gitDisp = true; } catch { /* git ausente */ }
+if (!gitDisp) {
+  if (existsSync(join(ROOT, ".env"))) aviso(".env local presente (git indisponivel p/ confirmar ignorancia)");
+  else ok(".env ausente");
+} else {
+  let tracked = false, ignorado = false;
+  try { execFileSync("git", ["ls-files", "--error-unmatch", "--", ".env"], { cwd: ROOT, stdio: "ignore" }); tracked = true; } catch { /* nao versionado */ }
+  try { execFileSync("git", ["check-ignore", "-q", "--", ".env"], { cwd: ROOT, stdio: "ignore" }); ignorado = true; } catch { /* nao ignorado */ }
+  const existe = existsSync(join(ROOT, ".env"));
+  if (tracked) erro(".env VERSIONADO no git (git rm --cached .env + manter no .gitignore)");
+  else if (existe && !ignorado) erro(".env existe e NAO esta no .gitignore (risco de commitar segredo)");
+  else if (existe) ok(".env local presente e ignorado pelo git (fora do repo)");
+  else ok(".env ausente (nada para commitar)");
+}
 
 // ---------- CHECK 15: encoding (mojibake UTF-8 mal decodificado) ----------
 console.log("\n[15] encoding (mojibake)");
@@ -343,27 +392,132 @@ const MOJI = /Ã[\x80-\xbf]|â€|Â[\x80-\xbf]/;
 let mojiHits = 0;
 for (const f of walk("docs", (r) => r.endsWith(".md"))
   .concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")),
-          walk("evals", (r) => r.endsWith(".md")), walk("agents", (r) => r.endsWith(".md")))) {
+          walk("evals", (r) => r.endsWith(".md")), walk("agents", (r) => r.endsWith(".md")),
+          walk("skills", (r) => r.endsWith(".md")), ["README.md"])) {
   const raw = read(f) || "";
   const m = raw.match(MOJI);
   if (m) { erro(`${f}: mojibake/encoding (${m[0]}...)`); mojiHits++; }
+  if (raw.charCodeAt(0) === 0xfeff) { erro(`${f}: BOM (U+FEFF) no inicio do arquivo`); mojiHits++; }
+  if (/param\(\$m\)|\.Value\.Replace\(/.test(raw)) { erro(`${f}: residuo de script PowerShell no conteudo`); mojiHits++; }
 }
-if (!mojiHits) ok("sem mojibake (UTF-8 integro em docs/templates/commands/evals/agents)");
+if (!mojiHits) ok("sem mojibake/BOM/residuo (UTF-8 integro em docs/templates/commands/evals/agents/skills/README)");
 
 // ---------- CHECK 16: links relativos resolvem p/ arquivo existente ----------
 console.log("\n[16] links relativos");
-const LINK = /\]\((\.{1,2}\/[^)#\s]+)\)/;
+// cobre ./x, ../x e x.md (mesma pasta); exclui http(s)://, mailto: e ancoras puras
+const LINK = /\]\((?!https?:\/\/|mailto:|#)([^)\s]+)\)/;
 let linkHits = 0;
 let linkTotal = 0;
-for (const f of walk("docs", (r) => r.endsWith(".md")).concat(walk("commands", (r) => r.endsWith(".md")))) {
+for (const f of walk("docs", (r) => r.endsWith(".md")).concat(walk("commands", (r) => r.endsWith(".md")),
+          walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md"])) {
   const raw = read(f) || "";
   for (const [, rel] of raw.matchAll(new RegExp(LINK.source, "g"))) {
     linkTotal++;
-    const alvo = join(dirname(join(ROOT, f)), rel);
+    const rel0 = rel.split("#")[0];
+    if (!rel0) continue;
+    const alvo = join(dirname(join(ROOT, f)), rel0);
     if (!existsSync(alvo)) { erro(`${f}: link quebrado -> ${rel}`); linkHits++; }
   }
 }
 if (!linkHits) ok(`${linkTotal} links relativos resolvem para arquivos existentes`);
+
+// ---------- CHECK 17: skills ----------
+console.log("\n[17] skills/");
+const SKILLS = ["debug-sistematico", "delegacao-verificada", "explicar-para-aprender", "pratica-intercalada",
+  "recall-ativo", "repeticao-espacada", "revisao-segura", "testes-eficazes"];
+for (const s of SKILLS) {
+  const raw = read(`skills/${s}/SKILL.md`);
+  if (!raw) { erro(`skills/${s}/SKILL.md ausente`); continue; }
+  const fmS = frontmatter(raw);
+  if (fmS && fmS.name === s) ok(`skills/${s}`);
+  else erro(`skills/${s}/SKILL.md: frontmatter name="${fmS ? fmS.name : "ausente"}" != "${s}"`);
+}
+const citadas = new Set();
+let skillH = 0;
+for (const f of walk("agents", (r) => r.endsWith(".md"))) {
+  const raw = read(f) || "";
+  for (const [, s] of raw.matchAll(/skills[\\/]([a-z0-9-]+)[\\/]/g)) {
+    if (!SKILLS.includes(s)) { erro(`${f}: cita skill inexistente skills/${s}/`); skillH++; }
+  }
+  for (const s of SKILLS) if (new RegExp(`(^|[^a-z0-9-])${s}([^a-z0-9-]|$)`).test(raw)) citadas.add(s);
+}
+if (!skillH) ok("agents citam somente skills existentes");
+for (const s of SKILLS) if (!citadas.has(s)) aviso(`skills/${s}: nao citada por nome em nenhum agent`);
+
+// ---------- CHECK 18: paths em backtick existem ----------
+console.log("\n[18] paths em backtick");
+const PATHY = /^(docs|templates|commands|scripts|agents|evals|skills|\.github|\.opencode)\//;
+const RAIZF = ["README.md", "package.json", "opencode.jsonc", ".env.example", "LICENSE"];
+let pathH = 0, pathT = 0;
+for (const f of walk("docs", (r) => r.endsWith(".md")).concat(
+    walk("commands", (r) => r.endsWith(".md")), walk("agents", (r) => r.endsWith(".md")),
+    walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md"])) {
+  const raw = (read(f) || "").replace(/```[\s\S]*?```/g, "");
+  for (const [, tok] of raw.matchAll(/`([^\`\n]+)`/g)) {
+    const p = tok.trim();
+    if (/[<>\*{}]/.test(p) || /YYYY|DD-|HH-/.test(p) || p.includes("|") || p.includes(" ")) continue;
+    if (p.startsWith(".opencode/memory/inbox/")) continue; // arquivo criado em runtime pelo sync-memory
+    if (!PATHY.test(p) && !RAIZF.includes(p)) continue;
+    pathT++;
+    if (!existsSync(join(ROOT, p))) { erro(`${f}: path inexistente -> ${p}`); pathH++; }
+  }
+}
+if (!pathH) ok(`${pathT} paths em backtick existem no repo`);
+
+// ---------- CHECK 19: cabecalho de evals coerente com o conteudo ----------
+console.log("\n[19] cabecalhos de evals");
+for (const [f, pat] of [["evals/estudos.md", /^## E\d+/gm], ["evals/ganhos.md", /^## E\d+/gm], ["evals/software.md", /^## S\d+/gm]]) {
+  const raw = read(f);
+  if (!raw) continue;
+  const real = (raw.match(pat) || []).length;
+  const decl = raw.match(/QA valida (\d+)\/(\d+)/);
+  if (!decl) erro(`${f}: sem "QA valida N/M" no cabecalho`);
+  else if (+decl[1] !== real || +decl[2] !== real) erro(`${f}: cabecalho diz ${decl[1]}/${decl[2]}, real ${real}`);
+  else ok(`${f}: cabecalho ${decl[1]}/${decl[2]} == ${real} evals`);
+}
+
+// ---------- CHECK 20: invariantes de trend nos exemplos ----------
+console.log("\n[20] invariantes de trend");
+let invH = 0;
+for (const f of walk("docs/ganhos", (r) => r.endsWith("trends.md"))) {
+  const raw = read(f) || "";
+  for (const line of raw.split(/\r?\n/)) {
+    if (!/^\|/.test(line) || /^\|\s*[-: ]+\|/.test(line)) continue;
+    const c = line.split("|").slice(1, -1).map((s) => s.trim());
+    const score = parseFloat((c[5] || "").replace(/\./g, "").replace(",", "."));
+    if (Number.isFinite(score) && score > 0) {
+      const vol = parseFloat((c[4] || "").replace(/\./g, ""));
+      if (!(vol > 0)) { erro(`${f}: score ${score} com volume "${c[4]}" (exige volume > 0)`); invH++; }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(c[3] || "")) { erro(`${f}: score ${score} com data invalida "${c[3]}"`); invH++; }
+      if (!c[2] || /^nao confirmado/i.test(c[2])) { erro(`${f}: score ${score} sem fonte valida ("${c[2]}")`); invH++; }
+    }
+    if (/eleitoral\s*=\s*true/i.test(line) && !/base_legal/i.test(line)) { erro(`${f}: linha eleitoral=true sem base_legal`); invH++; }
+  }
+}
+if (!invH) ok("trends: score>0 exige volume+data+fonte; eleitoral exige base_legal");
+
+// ---------- CHECK 21: contagens do README x realidade ----------
+console.log("\n[21] contagens do README");
+const nAgentsR = walk("agents", (r) => r.endsWith(".md")).length;
+const nCmdsR = walk("commands", (r) => r.endsWith(".md")).length;
+const nSkillsR = walk("skills", (r) => r.endsWith("SKILL.md")).length;
+const rd = read("README.md") || "";
+let contH = 0;
+const mA = rd.match(/(\d+)\s+agentes?\b/);
+if (!mA || +mA[1] !== nAgentsR) { erro(`README declara "${mA ? mA[1] : "?"} agentes", real ${nAgentsR}`); contH++; }
+const mc = rd.match(/(\d+)\s+comandos?\b/);
+if (!mc || +mc[1] !== nCmdsR) { erro(`README declara "${mc ? mc[1] : "?"} comandos", real ${nCmdsR}`); contH++; }
+const mS = rd.match(/(\d+)\s+skills?\b/);
+if (!mS || +mS[1] !== nSkillsR) { erro(`README declara "${mS ? mS[1] : "?"} skills", real ${nSkillsR}`); contH++; }
+const realE = [21, 23, 4].map((_, i) => ((read(["evals/estudos.md", "evals/ganhos.md", "evals/software.md"][i]) || "").match(/^## [ES]\d+/gm) || []).length);
+const mE = rd.match(/estudos (\d+), ganhos (\d+), software (\d+)/);
+if (!mE || +mE[1] !== realE[0] || +mE[2] !== realE[1] || +mE[3] !== realE[2]) {
+  erro(`README declara evals "${mE ? mE.slice(1).join("/") : "?"}", real ${realE.join("/")}`); contH++;
+}
+const realChecks = ((read("scripts/validate.mjs") || "").match(/---------- CHECK \d+/g) || []).length;
+const mK = rd.match(/\((\d+)\s+checks?\)/);
+if (!mK || +mK[1] !== realChecks) { erro(`README declara "${mK ? mK[1] : "?"} checks", real ${realChecks}`); contH++; }
+if (!contH) ok(`README: ${nAgentsR} agents + ${nCmdsR} comandos + ${nSkillsR} skills + evals ${realE.join("/")} + ${realChecks} checks conferem`);
 
 // ---------- resumo ----------
 console.log(`\n== RESULTADO: ${erros} ERRO(S), ${avisos} AVISO(S) ==`);

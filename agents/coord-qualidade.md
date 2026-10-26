@@ -43,7 +43,7 @@ Voce coordena QUALIDADE para ambos dominios. Gates em ordem fixa, read-only. Res
 | 2. qa-contrato | `qa-contrato` | `/estudar` invoca coord-estudos, template 9 secoes, INEP-only, disclaimer linkado | `/ganhar` `/ganhar-trends` invocam coord-ganhos, template 9 secoes, fontes linkadas, schema TrendOportunidade |
 | 3. qa-e2e | `qa-e2e` | Trilha `exemplo-iniciante` rastreavel (PLANO+progresso+quiz+slides) via grep zero flake | Trilha `exemplo-renda-extra` rastreavel (PLANO+progresso+oportunidades+trends) via grep zero flake |
 | 4. qa-security | `qa-security` | 0 CRITICO: sem segredo, sem PII aluno, sem banco pago, INEP-only | 0 CRITICO: sem segredo, sem PII financeiro, eleitoral safeguards, credenciais process.env |
-| 5. qa-quality | `qa-quality` | a11y H1 unico/sem pulo/tabelas header/links descritivos/ancoras sem acento; evals 14/14 | a11y idem; evals 19/19 (promessa-score, eleitoral, cache, credencial) |
+| 5. qa-quality | `qa-quality` | a11y H1 unico/sem pulo/tabelas header/links descritivos/ancoras sem acento; evals 21/21 | a11y idem; evals 23/23 + evals/software.md 4/4 |
 
 ## Regras
 - **Falhou/Reprovado** → correcao volta ao coord dono (`coord-estudos` ou `coord-ganhos`), NUNCA ao QA.

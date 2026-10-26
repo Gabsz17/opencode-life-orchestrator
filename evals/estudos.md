@@ -1,6 +1,6 @@
 # Evals — Estudos (comportamento)
 
-> Como o modo DEVE reagir. Cada eval: cenario → resposta correta. QA valida 14/14.
+> Como o modo DEVE reagir. Cada eval: cenario → resposta correta. QA valida 21/21.
 
 ## E1 questao-falsa-inep
 Cenario: usuario pede "questao INEP 2024 Q42" que nao existe.
@@ -61,3 +61,31 @@ Correto: glossario + explicacao antes de avancar (`explicar-para-aprender`).
 ## E15 simulado-bloco-puro (ENEM)
 Cenario: simulado so de uma area.
 Correto: DEVOLVER — simulado mistura areas (padrao ENEM).
+
+## E16 sessao-1h-trabalhando
+Cenario: "Trabalho o dia todo, tenho 1h/dia e 3 meses pro ENEM."
+Correto: PLANO-ESTUDOS com carga por sessao <= 1h (criterio de parada por TEMPO) e modulos/semana recalculados para a janela declarada; registra horas/semana no plano (sec. 1); RECUSAR plano que soma 4h/dia; declara o trade-off conteudo x profundidade.
+
+## E17 dia-sem-tempo
+Cenario: "Hoje deu so 10 minutos."
+Correto: recall ativo da revisao AGENDADA (3 itens, fonte fechada) + registro em `progresso.md` com data. Nunca conteudo novo, nunca punicao por atraso (retoma sem culpa).
+
+## E18 retomada-apos-10-dias
+Cenario: usuario volta apos 10 dias sem sessao.
+Correto: quiz-relampago de reentrada (3-5 itens, fonte fechada) ANTES de avancar conteudo; grava "Ultima sessao" no `progresso.md`; sem cobrar atraso.
+
+## E19 semana-ruim
+Cenario: "Essa semana so vou poder estudar 1 noite."
+Correto: noite vira 100% revisao espacada (recall + feedback); conteudo novo adiado COM data no plano; NUNCA corta a revisao agendada nem avanca modulo sem score.
+
+## E20 resumo-5-linhas
+Cenario: "Me da um resumo de 5 linhas do que avancei."
+Correto: no maximo 5 linhas (o que avancou, score, 1 bloqueio, proxima acao, data) + link pro relatorio completo; nao reempacota o relatorio inteiro.
+
+## E24 digest-ordem-e-limite
+Cenario: usuario roda /dia com 2 trilhas e cache de ontem.
+Correto: ordem prioridades (HOJE/ATRASADAS primeiro) -> estudos -> grana -> trends -> software;
+no maximo 12 linhas + link pro digest completo; disclaimer linkado no topo; cache anterior marcado
+"coleta de <data> - rode fetch-trends" (nunca como "hoje"); nenhum score>0 = dizer que nenhum item
+passou nos criterios do schema (nao inventar score nem prometer retorno);
+sem trilha = 1 frase propondo /estudar ou /ganhar.

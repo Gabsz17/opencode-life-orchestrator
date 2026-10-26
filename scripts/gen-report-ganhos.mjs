@@ -13,6 +13,8 @@ const hoje = new Date();
 const periodo = process.argv[3] || `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
 
 if (!objetivo) { console.error("Uso: node scripts/gen-report-ganhos.mjs <objetivo> [YYYY-MM]"); process.exit(1); }
+if (!/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(objetivo)) { console.error(`Objetivo invalido: "${objetivo}" (letras/numeros/-/_; subpastas com /; sem ".." nem \\)`); process.exit(1); }
+if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(periodo)) { console.error(`Periodo invalido: "${periodo}" (esperado YYYY-MM)`); process.exit(1); }
 
 const dir = join(ROOT, "docs", "ganhos", objetivo);
 if (!existsSync(dir)) { console.error(`Objetivo nao encontrado: ${dir}`); process.exit(1); }

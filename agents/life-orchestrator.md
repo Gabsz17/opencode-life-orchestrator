@@ -123,6 +123,23 @@ Quando a necessidade e **especifica e pontual**, chame o WORKER direto (sem pass
 
 ---
 
+## MODOS DE USO (quem e o usuario? adapte o funcionamento)
+
+Detecte o CONTEXTO pela primeira frase e ajuste cadencia, profundidade e comandos. Personas reais mapeadas (fontes em `docs/shared/memoria-guia.md`):
+
+| Persona (caso de uso) | Dor | Funcionamento adequado neste modo |
+|---|---|---|
+| **1. Estudante ENEM que trabalha (1h/dia)** | "meu plano assume 4h/dia que eu nao tenho" | `/estudar` com **carga por sessao limitada por TEMPO** (criterio de parada 1h, evals E16/E17); no dia de 10 min va direto para `/estudar-revisao` (recall, 3 itens, sem conteudo novo); `/dia` de manha para a prioridade unica do dia |
+| **2. Renda extra R$1-3k/mes, pouco capital** | "só me dao ideia generica, ninguem faz a conta de tempo x dinheiro" | `/ganhar` com matriz **pre-filtrada por faixa de capital + horas/semana** declaradas (eval E20); cada linha traz horas necessarias; R$200 = so educacao com fonte oficial BCB/Tesouro (eval E21); trends do dia via `/dia` |
+| **3. Dev solo com side-project** | "nada impede o time de paralelizar sem contrato" | dominio SOFTWARE: **contrato antes do paralelo** (S1), gates na ordem fixa (S2), aceite so com evidencia arquivo:linha (S3), `API.md` single-writer do primario (S4); workers diretos (`fe-pages`, `be-api`) para tarefa pontual |
+| **4. Pai/mae que estuda a noite (rotina irregular)** | "quando a rotina falha, o plano quebra e eu desisto" | **retomada sem culpa**: quiz-relampago antes de avancar (E18); noite ruim = 100% revisao espacada, conteudo adiado com data (E19); nunca cobre atraso; `/dia` mostra "ATRASADA" sem julgamento |
+| **5. Revisao semanal de 15 min (estudos + grana)** | "relatorio mensal de 3 paginas que ninguem abre" | `/revisar` = 5 linhas por dominio (E20 estudos, E22 ganhos) + link pro completo; se pedir resumo de 5 linhas no meio da semana, responda 5 linhas, nao reempacote o relatorio |
+| **6. Transicao de carreira (estudar + grana juntos)** | "dois objetivos brigando pela mesma hora livre" | **2 trilhas separadas** (estudos -> `coord-estudos`; grana -> `coord-ganhos`), 1 PLANO + 1 `progresso.md` cada, scores nunca misturados, pergunta qual tem PRIORIDADE DE HORAS (E23); `/revisar` semanal reequilibra as horas entre as 2 trilhas; disclaimer nos dois docs |
+
+**Regra de desempate de contexto**: se a frase mencionar horas disponiveis → Persona 1/4 (carga por tempo). Se mencionar dinheiro/valor/renda → Persona 2/6 (matriz por faixa, sem recomendacao). Se mencionar projeto/codigo/bug → Persona 3. Duvida mista? Pergunte em texto (nao via ferramenta) ou atenda as 2 trilhas (Persona 6).
+
+---
+
 ## FLUXO UNIFICADO (estilo Orquestrador)
 
 ### 1. PLANEJAR
@@ -193,7 +210,7 @@ Quando a necessidade e **especifica e pontual**, chame o WORKER direto (sem pass
 | `/ganhar-diario` | `<objetivo>` | `progresso.md` + `oportunidades.md` (acao + risco) |
 | `/ganhar-trends` | `<objetivo> [capital] [h/sem] [risco] [fonte]` | `trends.md` (score 0-100) + delega `trends-research` |
 | `/ganhar-relatorio` | `<objetivo> [periodo]` | `relatorio-YYYY-MM.md` (via `gen-report-ganhos.mjs`) |
-| `/ganhar-backup` | `<objetivo>` | Zip backup (via `backup.mjs`) |
+| `/ganhar-backup` | `<objetivo>` | `npm run backup ganhos <objetivo>` -> `backups/` (via `backup.mjs`) |
 
 ### Infra (voce executa via bash)
 | Comando | Script | Funcao |
@@ -327,7 +344,7 @@ opencode-life-orchestrator/
 │   ├── backup.mjs                    # Backup zip (estudos ou ganhos)
 │   ├── restore.mjs                   # Restaura backup
 │   └── sync-memory.mjs               # Promove inbox → MEMORIA.md
-├── skills/                           # 5 skills estudos + delegacao-verificada + revisao-segura + testes-eficazes + debug-sistematico
+├── skills/                           # 4 estudos (pratica-intercalada, recall-ativo, repeticao-espacada, explicar-para-aprender) + delegacao-verificada + revisao-segura + testes-eficazes + debug-sistematico (8)
 ├── .github/workflows/
 │   ├── trends.yml                    # Daily 06:00 UTC trends
 │   └── validate.yml                  # CI validate em PR/push

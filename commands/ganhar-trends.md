@@ -1,6 +1,6 @@
 # /ganhar-trends — matriz trends do dia (score 0-100)
 
-> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Ver `docs/ganhos/disclaimer.md`. Sem promessa de lucro.
+> Conteudo educacional. Nao e recomendacao de investimento. Ha risco de perda. Ver [Aviso educacional — disclaimer](../docs/ganhos/disclaimer.md). Sem promessa de lucro.
 
 Invoca `life-orchestrator` -> `coord-ganhos` -> `trends-research`. Cria/atualiza `docs/ganhos/<objetivo>/trends.md` (matriz score/saturacao/fonte) + atualiza `progresso.md` + `oportunidades.md` com `TrendOportunidade`.
 
