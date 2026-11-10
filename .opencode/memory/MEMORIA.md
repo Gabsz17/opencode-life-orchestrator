@@ -12,6 +12,7 @@
 - A11y: 1 H1 por md, ancoras sem acento. `scripts/validate.mjs` tem que ficar VERDE antes de commit-marco.
 
 ## Recentes
+- 2026-11-10: Fase 14 FECHADA: commit d75ac0a pushado; CI validate = success (run 42762679524); validate 0/0 (22 checks), doctor 0/0; gate coord-qualidade LIBERADO (8 LOW corrigidos).
 - 2026-11-10: Gate coord-qualidade (fase 14) = LIBERADO COM PENDENCIAS (0 CRIT/ALTO; F-01..F-08 LOW): `Number("")===0` no SGS (validar trim); data de calendario (31/02) passa regex; semver `>=16 <21` exige range superior; regex de pin line-based casa `uses:` em bloco `run: |` e rejeita SHA UPPERCASE; doctor e validate divergiram no extrator JSONC; PLANO.md agora nos checks 13/14/16/18; fonte vazia (Google/Wikipedia) precisa virar `naoConfirmado`.
 - 2026-11-10: check 21 so cobre README; contagens em prosa de agents (arvore com 15/19 evals e 7 fontes) apodrecem sem check - atualizar junto com o dado ou proibir numero em prosa.
 - 2026-11-10: Revisao coord-plataforma (fase 14) achou 3 MEDIO: SSH `git@host:path` NAO e credencial (detectar userinfo so em http(s) e redigir a URL no OK); pin de action exige varrer TODOS os workflows + regex ancorada (aspas/reusable/linha comentada); `.env.*` force-add nao era detectado (`git ls-files '.env*'`, so `.env.example` permitido). Corrigidos + F4-F8 (check sem git nao da OK falso; doctor valida conteudo; docs 8 fontes/BCB macro).

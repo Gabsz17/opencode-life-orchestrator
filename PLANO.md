@@ -23,7 +23,7 @@ Fechar os debitos registrados na fase 13:
 | 14.3 | YouTube header + actions pinadas | plat-infra | opencode-life-orchestrator | CONCLUIDA |
 | 14.4 | check 22 + README/API.md/MEMORIA | orquestrador | opencode-life-orchestrator | CONCLUIDA |
 | 14.5 | validate + doctor + fetch-trends + digest | orquestrador | opencode-life-orchestrator | CONCLUIDA |
-| 14.6 | gate coord-qualidade | coord-qualidade | opencode-life-orchestrator | LIBERADO COM PENDENCIAS (CI) |
+| 14.6 | gate coord-qualidade | coord-qualidade | opencode-life-orchestrator | LIBERADO (CI verde) |
 
 ## Progresso
 - [x] Levantamento dos debitos (fase 13 -> 14)
@@ -36,7 +36,7 @@ Fechar os debitos registrados na fase 13:
 - [x] Evidencia local (validate/doctor/fetch-trends/digest)
 - [x] Revisao coord-plataforma (APROVADO COM RESSALVAS) + correcoes F1-F8
 - [x] Gate coord-qualidade (LIBERADO COM PENDENCIAS: 0 CRITICO/ALTO; 8 LOW corrigidos; resta CI)
-- [ ] Commit + push + CI verde do delta
+- [x] Commit + push + CI verde do delta (d75ac0a; run 42762679524 = success)
 
 ## Decisoes
 - BCB serie 432 (Selic meta) retorna datas FUTURAS no SGS (20/11..09/12/2026 em 10/11/2026):
