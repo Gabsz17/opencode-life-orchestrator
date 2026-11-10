@@ -216,7 +216,8 @@ Detecte o CONTEXTO pela primeira frase e ajuste cadencia, profundidade e comando
 | Comando | Script | Funcao |
 |---------|--------|--------|
 | `npm run validate` | `scripts/validate.mjs` | Validação completa (estudos + ganhos + shared) |
-| `npm run fetch-trends` | `scripts/fetch-trends.mjs` | Coleta 7 fontes trends (cache 24h) |
+| `npm run fetch-trends` | `scripts/fetch-trends.mjs` | Coleta 8 fontes trends (cache 24h) |
+| `npm run doctor` | `scripts/doctor.mjs` | Diagnostico de ambiente (exit 1 so p/ bloqueio) |
 | `npm run sync-memory` | `scripts/sync-memory.mjs` | Promove inbox → MEMORIA.md (dedupe) |
 
 ---
@@ -334,13 +335,16 @@ opencode-life-orchestrator/
 │   └── shared/                       # Docs compartilhados
 │       └── memoria-guia.md
 ├── evals/
-│   ├── estudos.md                    # 15 evals comportamento estudos
-│   └── ganhos.md                     # 19 evals comportamento ganhos
+│   ├── estudos.md                    # 21 evals comportamento estudos
+│   ├── ganhos.md                     # 23 evals comportamento ganhos
+│   └── software.md                   # 4 evals comportamento software
 ├── scripts/
 │   ├── validate.mjs                  # Valida tudo (estudos + ganhos + shared)
-│   ├── fetch-trends.mjs              # Coleta trends 7 fontes
+│   ├── fetch-trends.mjs              # Coleta trends 8 fontes
 │   ├── gen-report-estudos.mjs        # Relatorio estudos
 │   ├── gen-report-ganhos.mjs         # Relatorio ganhos
+│   ├── gen-digest.mjs                # Digest diario
+│   ├── doctor.mjs                    # Diagnostico de ambiente
 │   ├── backup.mjs                    # Backup zip (estudos ou ganhos)
 │   ├── restore.mjs                   # Restaura backup
 │   └── sync-memory.mjs               # Promove inbox → MEMORIA.md

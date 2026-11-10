@@ -71,9 +71,10 @@ Arbitragens do contrato do orquestrador (arquivo `API.md` multi-projeto, fora de
 ## Rodar
 
 ```bash
-npm run validate           # validacao estrutural (21 checks)
+npm run validate           # validacao estrutural (22 checks)
+npm run doctor             # diagnostico de ambiente (node, git, .env, cache, inbox, scripts)
 npm run digest             # digest do dia -> docs/digest/YYYY-MM-DD.md
-npm run fetch-trends       # coleta 7 fontes oficiais + fallback Wikipedia (cache 24h; --force rebusca)
+npm run fetch-trends       # coleta 8 fontes (Google News RSS, X, Wikipedia, TikTok, Meta, YouTube, TSE, BCB SGS; cache 24h; --force rebusca)
 npm run gen-report-estudos <tema> [YYYY-MM]
 npm run gen-report-ganhos  <objetivo> [YYYY-MM]
 npm run backup <estudos|ganhos> <nome>

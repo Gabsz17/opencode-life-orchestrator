@@ -292,17 +292,18 @@ for (const [f, min, pat] of evalStats) {
 // ---------- CHECK 10: scripts + package.json ----------
 console.log("\n[10] scripts + package.json");
 let sintaxeErr = 0;
-for (const s of ["validate.mjs", "fetch-trends.mjs", "gen-report-estudos.mjs", "gen-report-ganhos.mjs", "gen-digest.mjs", "backup.mjs", "restore.mjs", "sync-memory.mjs"]) {
+const SCRIPTS = ["validate.mjs", "fetch-trends.mjs", "gen-report-estudos.mjs", "gen-report-ganhos.mjs", "gen-digest.mjs", "doctor.mjs", "backup.mjs", "restore.mjs", "sync-memory.mjs"];
+for (const s of SCRIPTS) {
   const p = join(ROOT, "scripts", s);
   if (!existsSync(p)) { erro(`scripts/${s} ausente`); sintaxeErr++; continue; }
   try { execFileSync(process.execPath, ["--check", p], { stdio: "pipe" }); }
   catch (e) { erro(`scripts/${s}: erro de sintaxe -> ${String(e.stderr || "").split("\n")[0]}`); sintaxeErr++; }
 }
-if (!sintaxeErr) ok("8 scripts passam em node --check");
+if (!sintaxeErr) ok(`${SCRIPTS.length} scripts passam em node --check`);
 const pkgRaw = read("package.json");
 if (pkgRaw) {
   const pkg = JSON.parse(pkgRaw);
-  for (const s of ["validate", "fetch-trends", "gen-report-estudos", "gen-report-ganhos", "digest", "backup", "restore", "sync-memory"]) {
+  for (const s of ["validate", "fetch-trends", "gen-report-estudos", "gen-report-ganhos", "doctor", "digest", "backup", "restore", "sync-memory"]) {
     if (pkg.scripts && pkg.scripts[s]) ok(`npm run ${s}`);
     else erro(`package.json sem script: ${s}`);
   }
@@ -315,7 +316,7 @@ if (cfg.includes('"default_agent": "life-orchestrator"')) ok("default_agent: lif
 else erro("opencode.jsonc sem default_agent life-orchestrator");
 // parse real do JSONC (remove // comentarios de linha) — sem isso, quebra silencioso no runtime
 try {
-  const parsed = JSON.parse(cfg.replace(/^\s*\/\/.*$/gm, ""));
+  const parsed = JSON.parse(cfg.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1"));
   ok(`opencode.jsonc parseia (JSON valido, ${Object.keys(parsed).length} chaves raiz)`);
   const ge = parsed?.permission?.edit;
   if (ge && typeof ge === "object") {
@@ -346,7 +347,7 @@ for (const w of ["trends.yml", "validate.yml"]) {
 
 // ---------- CHECK 13: a11y markdown ----------
 console.log("\n[13] a11y markdown");
-const mdFiles = walk("docs", (r) => r.endsWith(".md")).concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")));
+const mdFiles = walk("docs", (r) => r.endsWith(".md")).concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md", "PLANO.md"]);
 let a11yErr = 0;
 for (const f of mdFiles) {
   const raw = read(f) || "";
@@ -362,7 +363,7 @@ const SECRET = /(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9
 let secretHits = 0;
 const secretScope = walk("docs", (r) => r.endsWith(".md"))
   .concat(walk("templates", (r) => r.endsWith(".md")), walk("commands", (r) => r.endsWith(".md")),
-          walk("evals", (r) => r.endsWith(".md")), walk("scripts", (r) => r.endsWith(".mjs")));
+          walk("evals", (r) => r.endsWith(".md")), walk("scripts", (r) => r.endsWith(".mjs")), ["PLANO.md"]);
 for (const f of secretScope) {
   const raw = read(f) || "";
   const m = raw.match(SECRET);
@@ -409,7 +410,7 @@ const LINK = /\]\((?!https?:\/\/|mailto:|#)([^)\s]+)\)/;
 let linkHits = 0;
 let linkTotal = 0;
 for (const f of walk("docs", (r) => r.endsWith(".md")).concat(walk("commands", (r) => r.endsWith(".md")),
-          walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md"])) {
+          walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md", "PLANO.md"])) {
   const raw = read(f) || "";
   for (const [, rel] of raw.matchAll(new RegExp(LINK.source, "g"))) {
     linkTotal++;
@@ -451,7 +452,7 @@ const RAIZF = ["README.md", "package.json", "opencode.jsonc", ".env.example", "L
 let pathH = 0, pathT = 0;
 for (const f of walk("docs", (r) => r.endsWith(".md")).concat(
     walk("commands", (r) => r.endsWith(".md")), walk("agents", (r) => r.endsWith(".md")),
-    walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md"])) {
+    walk("templates", (r) => r.endsWith(".md")), walk("evals", (r) => r.endsWith(".md")), ["README.md", "PLANO.md"])) {
   const raw = (read(f) || "").replace(/```[\s\S]*?```/g, "");
   for (const [, tok] of raw.matchAll(/`([^\`\n]+)`/g)) {
     const p = tok.trim();
@@ -518,6 +519,42 @@ const realChecks = ((read("scripts/validate.mjs") || "").match(/---------- CHECK
 const mK = rd.match(/\((\d+)\s+checks?\)/);
 if (!mK || +mK[1] !== realChecks) { erro(`README declara "${mK ? mK[1] : "?"} checks", real ${realChecks}`); contH++; }
 if (!contH) ok(`README: ${nAgentsR} agents + ${nCmdsR} comandos + ${nSkillsR} skills + evals ${realE.join("/")} + ${realChecks} checks conferem`);
+
+// ---------- CHECK 22: supply chain (env rastreado + actions pinadas) ----------
+console.log("\n[22] supply chain");
+let scH = 0;
+let envExemploOk = false;
+if (!gitDisp) aviso(".env.example: checagem de git pulada (sem git)");
+else {
+  let exTracked = false, exIgnored = false;
+  try { execFileSync("git", ["ls-files", "--error-unmatch", "--", ".env.example"], { cwd: ROOT, stdio: "ignore" }); exTracked = true; } catch { /* nao rastreado */ }
+  try { execFileSync("git", ["check-ignore", "-q", "--", ".env.example"], { cwd: ROOT, stdio: "ignore" }); exIgnored = true; } catch { /* nao ignorado */ }
+  if (!exTracked) { erro(".env.example NAO esta rastreado no git (modelo nao chega ao clone)"); scH++; }
+  else if (!existsSync(join(ROOT, ".env.example"))) { erro(".env.example rastreado mas ausente no working tree"); scH++; }
+  else if (exIgnored) { erro(".env.example esta no .gitignore (modelo nao chega ao clone)"); scH++; }
+  else envExemploOk = true;
+  // qualquer .env.* versionado (mesmo com force-add) e vazamento, exceto o exemplo
+  let envsGit = "";
+  try { envsGit = execFileSync("git", ["ls-files", "--", ".env*"], { cwd: ROOT, encoding: "utf8", stdio: "pipe" }).trim(); } catch { /* sem git */ }
+  const envsExtras = envsGit.split(/\r?\n/).filter(Boolean).filter((f) => f !== ".env.example");
+  if (envsExtras.length) { erro(`arquivo(s) .env versionado(s): ${envsExtras.join(", ")}`); scH++; }
+}
+const wfs = walk(".github/workflows", (r) => /\.ya?ml$/.test(r));
+for (const f of wfs) {
+  const raw = read(f) || "";
+  for (const line of raw.split(/\r?\n/)) {
+    const m = line.match(/^(\s*)-?\s*uses:\s*["']?([^"'\s#]+)["']?/);
+    if (!m || m[1].length > 8) continue; // ignora bloco run: | (indentacao maior)
+    const ref = m[2];
+    if (ref.startsWith("./") || ref.startsWith("docker://")) continue; // acao local / imagem
+    const at = ref.lastIndexOf("@");
+    if (at === -1 || !/^[0-9a-fA-F]{40}$/.test(ref.slice(at + 1))) {
+      erro(`${f}: action ${at === -1 ? ref : ref.slice(0, at)} nao pinada por SHA (@${at === -1 ? "sem ref" : ref.slice(at + 1)})`);
+      scH++;
+    }
+  }
+}
+if (!scH) ok(`actions pinadas por SHA em ${wfs.length} workflow(s)${envExemploOk ? " + .env.example versionado" : ""}`);
 
 // ---------- resumo ----------
 console.log(`\n== RESULTADO: ${erros} ERRO(S), ${avisos} AVISO(S) ==`);

@@ -1,5 +1,5 @@
 ---
-description: Pesquisa trends tempo real (7 fontes) + score 0-100 + cache 24h
+description: Pesquisa trends tempo real (8 fontes: 7 tempo real + Wikipedia) + score 0-100 + cache 24h
 mode: subagent
 hidden: true
 color: "#ec4899"

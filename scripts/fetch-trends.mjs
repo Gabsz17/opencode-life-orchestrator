@@ -58,6 +58,7 @@ async function fetchGoogle() {
     const data = JSON.parse(await getText("https://trends.google.com/trends/api/dailytrends?geo=BR&hl=pt-BR"));
     const days = data?.default?.trendingSearchesDays || [];
     if (!days.length) throw new Error("vazio");
+    const antes = trends.length;
     for (const s of (days[0].trendingSearches || []).slice(0, 10)) {
       const q = s.title?.query;
       const vol = s.formattedTraffic ? parseInt(String(s.formattedTraffic).replace(/[^\d]/g, ""), 10) || 0 : 0;
@@ -68,6 +69,7 @@ async function fetchGoogle() {
         trend_persistencia_dias: 1, score_oportunidade: 0, saturacao: "media", topico: q,
       });
     }
+    if (trends.length === antes) throw new Error("dailytrends sem itens");
   } catch {
     // Fallback: Google Noticias RSS BR (gratis, estavel, sem chave)
     try {
@@ -125,8 +127,10 @@ async function fetchWikipedia() {
     const [Y, M, D] = [ay.slice(0, 4), ay.slice(5, 7), ay.slice(8, 10)];
     const data = await getJSON(`https://wikimedia.org/api/rest_v1/metrics/pageviews/top/pt.wikipedia.org/all-access/${Y}/${M}/${D}`,
       10000, { "User-Agent": "life-orchestrator/1.0 (educational)" });
-    const arts = data?.items?.[0]?.articles || [];
-    for (const a of arts.filter((x) => !/^(Wikip|Especial|Arquivo|Categoria):/i.test(x.article)).slice(0, 12)) {
+    const arts = (data?.items?.[0]?.articles || [])
+      .filter((x) => !/^(Wikip|Especial|Arquivo|Categoria):/i.test(x.article))
+      .slice(0, 12);
+    for (const a of arts) {
       trends.push({
         trend_categoria: "outro",
         trend_fonte: `Wikipedia pt.pageviews ${Y}-${M}-${D}`,
@@ -136,6 +140,7 @@ async function fetchWikipedia() {
         _aviso: "pagina mais vista ontem (proxy de interesse; nao e volume de busca oficial)",
       });
     }
+    if (!arts.length) trends.push(naoConfirmado("outro", "Wikipedia pageviews sem artigos uteis"));
   } catch (e) { trends.push(naoConfirmado("outro", `falha Wikipedia pageviews: ${e.message}`)); }
 }
 
@@ -158,7 +163,9 @@ async function fetchYouTube() {
   const key = process.env.YOUTUBE_API_KEY;
   if (!key) { trends.push(naoConfirmado("youtube", "YOUTUBE_API_KEY nao configurada (env) — fallback web-operator")); return; }
   try {
-    const data = await getJSON(`https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=BR&maxResults=10&key=${key}`);
+    // chave em HEADER (nunca em query string: URL vai para logs/historico)
+    const data = await getJSON("https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=BR&maxResults=10",
+      10000, { "X-Goog-Api-Key": key });
     for (const v of data?.items || []) trends.push({
       trend_categoria: "youtube",
       trend_fonte: `YouTube Data v3 BR ${hoje}`,
@@ -183,9 +190,54 @@ function fetchTSE() {
   });
 }
 
-// ---------- 8. IBGE/BCB (demanda especifica) ----------
-function fetchEconomico() {
-  trends.push(naoConfirmado("bcb", "IBGE/BCB: demanda especifica via coord-pesquisa"));
+// ---------- 8. BCB SGS (contexto macro: dolar + IPCA; API publica, sem chave) ----------
+// O SGS as vezes devolve datas FUTURAS (ex.: serie 432/Selic agenda) -> descartar ponto > hoje.
+function pontoSGS(p) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(p?.data || ""));
+  if (!m) return null;
+  const [Y, M, D] = [Number(m[3]), Number(m[2]), Number(m[1])];
+  const dt = new Date(Date.UTC(Y, M - 1, D));
+  if (dt.getUTCFullYear() !== Y || dt.getUTCMonth() !== M - 1 || dt.getUTCDate() !== D) return null; // 31/02 nao existe
+  const iso = `${m[3]}-${m[2]}-${m[1]}`;
+  if (iso > hoje) return null;
+  const bruto = String(p.valor ?? "").trim();
+  if (bruto === "") return null; // Number("") === 0
+  const n = Number(bruto.replace(",", "."));
+  if (!Number.isFinite(n)) return null;
+  return { iso, br: p.data, valor: n };
+}
+async function fetchEconomico() {
+  const series = [
+    { codigo: 1, nome: "dolar comercial venda", casas: 4, unidade: "R$" },
+    { codigo: 433, nome: "IPCA mensal", casas: 2, unidade: "%" },
+  ];
+  const partes = [];
+  const falhas = [];
+  await Promise.all(series.map(async ({ codigo, nome, casas, unidade }) => {
+    try {
+      const data = await getJSON(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados/ultimos/8?formato=json`);
+      const pts = (Array.isArray(data) ? data : []).map(pontoSGS).filter(Boolean).sort((a, b) => a.iso.localeCompare(b.iso));
+      const ultimo = pts[pts.length - 1]; // mais recente com data <= hoje (ordem nao garantida pela API)
+      if (!ultimo) throw new Error("sem ponto com data <= hoje");
+      partes.push({ codigo, nome, unidade, ...ultimo, valorFmt: ultimo.valor.toFixed(casas).replace(".", ",") });
+    } catch (e) { falhas.push(`SGS ${codigo}: ${e.message}`); }
+  }));
+  if (!partes.length) {
+    trends.push(naoConfirmado("bcb", `BCB SGS indisponivel (${falhas.join("; ")})`));
+    return;
+  }
+  partes.sort((a, b) => a.codigo - b.codigo);
+  const fmtSGS = (p) => (p.unidade === "R$" ? `R$ ${p.valorFmt}` : `${p.valorFmt}%`);
+  trends.push({
+    trend_categoria: "bcb",
+    trend_fonte: partes.map((p) => `BCB SGS ${p.codigo} ${p.nome} ${p.br}`).join(" | "),
+    trend_data_coleta: hoje,
+    trend_volume: 0, trend_crescimento_pct: 0, trend_persistencia_dias: 1,
+    score_oportunidade: 0, saturacao: "baixa",
+    topico: partes.map((p) => `${p.nome}: ${fmtSGS(p)} (${p.br})`).join(" | "),
+    _aviso: "contexto macroeducacional (BCB SGS); nao e trend de volume nem recomendacao",
+  });
+  if (falhas.length) trends.push(naoConfirmado("bcb", `serie(s) com falha: ${falhas.join("; ")}`));
 }
 
 console.log(`[fetch-trends] iniciando coleta ${hoje}...`);

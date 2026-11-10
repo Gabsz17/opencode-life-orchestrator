@@ -1,9 +1,9 @@
-# Fontes trends — 7 fontes tempo real
+# Fontes trends — 8 fontes (7 tempo real + fallback Wikipedia)
 
 > Conteudo educacional. Ver [disclaimer](disclaimer.md).
 
 
-> Fontes de tendencias para Grana. Cache diario em `trends-cache/YYYY-MM-DD.json` (TTL 24h). Acesso base: 2026-10-25.
+> Fontes de tendencias para Grana. Cache diario em `trends-cache/YYYY-MM-DD.json` (TTL 24h). Atualizado: 2026-11-10 (BCB SGS real; Google Trends 404 -> fallback RSS).
 
 ## 1. TikTok Creative Center (Trends)
 - URL: `https://ads.tiktok.com/business/creativecenter/inspiration/popular/hashtag/pc/en`
@@ -31,8 +31,11 @@
 ## 6. TSE — trends eleitorais (SENSIVEL)
 - `https://dadosabertos.tse.jus.br/` — so monitoramento educacional; `base_legal` obrigatorio (Lei 9.504/97 + Res. TSE 23.610/2019).
 
-## 7. IBGE / BCB — trends economicas
-- SIDRA (`https://sidra.ibge.gov.br/`) + SGS (`https://api.bcb.gov.br/`) — termos economicos em alta.
+## 7. IBGE / BCB — contexto macro (dolar + IPCA)
+- SGS publico (`https://api.bcb.gov.br/`), sem chave: series fixas 1 (dolar comercial venda) e 433 (IPCA mensal).
+- E **contexto macroeducacional**, nao trend de volume: o item entra com `trend_volume=0` e `_aviso` explicito.
+- Ponto com data futura e descartado (a serie 432/Selic devolve agenda); falha de serie = `nao confirmado`.
+- SIDRA (`https://sidra.ibge.gov.br/`) fica para demanda especifica via `coord-pesquisa`, nao na coleta diaria.
 
 ## Criterio de validacao (todos)
 - **Volume**: Google Trends >= 10K OU TikTok >= 100K (24h equivalente).

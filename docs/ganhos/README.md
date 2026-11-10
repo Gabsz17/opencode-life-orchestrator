@@ -21,13 +21,13 @@
 
 ## Fontes
 - [Fontes mercado (BCB, CVM, B3, Tesouro, SEBRAE, TSE)](fontes-mercado.md)
-- [Fontes trends (7 fontes tempo real)](fontes-trends.md)
+- [Fontes trends (8 fontes: 7 tempo real + Wikipedia)](fontes-trends.md)
 
 ## Regras
 - Cotacao/trend **sempre data+fonte**. Sem fonte = `nao confirmado`.
 - Eleicoes 2026 = sensivel (Lei 9.504/97 + Res. TSE 23.610/2019): `base_legal` obrigatorio.
 - Sem segredo no repo: chaves so via env `{env:NOME}`, `.env` fora do git.
-- Cache trends 24h em `trends-cache/YYYY-MM-DD.json` (fora do git).
+- Cache trends 24h em `trends-cache/YYYY-MM-DD.json` (gitignorado localmente; o CI commita via `git add -f`).
 
 ## Sua primeira sessao
 1. Life-orchestrator le seu objetivo, capital (faixa), horas/semana e tolerancia a risco.

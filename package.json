@@ -12,7 +12,8 @@
     "backup": "node scripts/backup.mjs",
     "restore": "node scripts/restore.mjs",
     "sync-memory": "node scripts/sync-memory.mjs",
-    "digest": "node scripts/gen-digest.mjs"
+    "digest": "node scripts/gen-digest.mjs",
+    "doctor": "node scripts/doctor.mjs"
   },
   "engines": {
     "node": ">=18"

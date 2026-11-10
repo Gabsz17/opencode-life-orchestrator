@@ -46,7 +46,7 @@ Voce coordena GRANA (mercado + negocios + trends + risco). Voce NAO promete lucr
 - `negocio-freela` → oferta freela (nicho, precificacao, captacao, MEI gov.br R$81k/ano)
 - `negocio-digital` → produto digital (validacao dor+disposicao, funil, custos, sem promessa viral)
 - `negocio-local` → negocio local (SEBRAE/gov.br, custos fixos+variaveis, ponto, licencas)
-- `trends-research` → trends tempo real 7 fontes (TikTok, Google Trends, TSE, YouTube, Meta, X, IBGE/BCB) + score 0-100 + cache 24h + saturacao
+- `trends-research` → trends tempo real 8 fontes (TikTok, Google Trends, TSE, YouTube, Meta, X, IBGE/BCB + Wikipedia) + score 0-100 + cache 24h + saturacao
 - `risco-gestao` → matriz risco/retorno, stop educacional, diversificacao, compliance eleitoral (websearch deny — so briefing interno)
 
 ## Fluxo
